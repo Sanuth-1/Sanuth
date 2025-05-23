@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive CHM 102 Textbook Outline (UNILAG Focus)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Visualization & Content Choices: 
+        - Report Info: Overall CHM 102 curriculum structure and emphasis (Organic, Inorganic, Qualitative Analysis vs. Physical Chem).
+        - Goal: Visually represent the unique focus of UNILAG's CHM 102.
+        - Viz/Presentation Method: Donut Chart (Chart.js).
+        - Interaction: Hover tooltips on chart segments.
+        - Justification: To provide a quick visual summary of a key finding in the report about the curriculum's distinct nature.
+        - Library/Method: Chart.js on Canvas.
+
+        - Report Info: Table 2: Typical CHM 102 Laboratory Experiments.
+        - Goal: Present tabular data clearly and allow for easy reference.
+        - Viz/Presentation Method: HTML Table styled with Tailwind CSS.
+        - Interaction: Read-only, formatted for clarity.
+        - Justification: Standard and effective way to present structured tabular information from the report.
+        - Library/Method: HTML/Tailwind.
+
+        - Report Info: All textual content from the report's sections (I-X and Conclusion).
+        - Goal: Make the detailed textbook outline accessible, readable, and navigable.
+        - Viz/Presentation Method: Formatted HTML text within distinct content sections, dynamically displayed based on sidebar navigation.
+        - Interaction: Clickable sidebar navigation to show/hide relevant text sections.
+        - Justification: To allow users to focus on specific parts of the extensive outline and digest the information in manageable chunks.
+        - Library/Method: HTML/Tailwind for structure and styling, JavaScript for navigation logic.
+        -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .sidebar {
+            width: 280px;
+            min-width: 280px;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; 
+            max-height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        /* Tailwind Custom Scrollbar for Webkit */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #a0aec0; /* Tailwind gray-500 */
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #718096; /* Tailwind gray-600 */
+        }
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1d4ed8; /* Tailwind blue-700 */
+        }
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: #1e40af; /* Tailwind blue-800 */
+        }
+        p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        th, td {
+            border: 1px solid #e2e8f0; /* Tailwind gray-300 */
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f5f9; /* Tailwind slate-100 */
+        }
+        .nav-link {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .nav-link:hover {
+            background-color: #e0f2fe; /* Tailwind sky-100 */
+            color: #0c4a6e; /* Tailwind sky-800 */
+        }
+        .nav-link.active {
+            background-color: #0ea5e9; /* Tailwind sky-500 */
+            color: white;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-stone-100 text-neutral-800 flex h-screen overflow-hidden">
+
+    <aside class="sidebar bg-stone-200 p-6 overflow-y-auto custom-scrollbar flex-shrink-0">
+        <h1 class="text-xl font-bold text-sky-700 mb-6">CHM 102 Outline</h1>
+        <nav id="mainNav">
+            <a href="#" class="nav-link active" data-target="overview">I. Overview & Objectives</a>
+            <a href="#" class="nav-link" data-target="qualitative-analysis">II. Qualitative Analysis</a>
+            <a href="#" class="nav-link" data-target="bonding-structure">III. Chemical Bonding</a>
+            <a href="#" class="nav-link" data-target="intro-organic">IV. Intro to Organic Chem</a>
+            <a href="#" class="nav-link" data-target="hydrocarbons">V. Hydrocarbons</a>
+            <a href="#" class="nav-link" data-target="main-group-transition">VI. Main Group & Transition Metals</a>
+            <a href="#" class="nav-link" data-target="functional-groups">VII. Functional Groups</a>
+            <a href="#" class="nav-link" data-target="biomolecules">VIII. Biomolecules</a>
+            <a href="#" class="nav-link" data-target="general-principles">IX. General Chem Principles</a>
+            <a href="#" class="nav-link" data-target="lab-components">X. Lab Components</a>
+            <a href="#" class="nav-link" data-target="conclusion">Conclusion</a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 p-6 md:p-10 overflow-y-auto custom-scrollbar">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-sky-800">Interactive CHM 102 Textbook Outline (UNILAG Focus)</h1>
+            <p class="text-md text-neutral-600">An explorable guide to the University of Lagos CHM 102 curriculum.</p>
+        </header>
+
+        <section id="overview" class="content-section active">
+            <h2>I. Introduction to CHM 102: Introductory Chemistry II</h2>
+            <p class="italic text-neutral-700">This introductory section establishes the context and objectives of the CHM 102 course, outlining its position within the broader chemistry curriculum at UNILAG. It highlights the foundational nature of the topics covered, particularly for subsequent advanced studies in various specialized branches of chemistry. You'll find an overview of the course structure and its key learning objectives, including a visual representation of the curriculum's unique emphasis.</p>
+            
+            <h3>1.1 Overview of CHM 102 in the UNILAG Curriculum</h3>
+            <p>CHM 102 is formally designated as "Introductory Chemistry II" and carries a significant weight of 4 units within the UNILAG academic framework.[1, 2] This course serves as a direct continuation of foundational concepts likely introduced in CHM 101, building upon students' initial understanding of chemical principles. A critical distinction of the UNILAG CHM 102 curriculum, as evidenced by its detailed course outline, is its pronounced emphasis on "Introductory Organic Chemistry" [3] alongside qualitative analysis and descriptive inorganic chemistry.[1] This specific curricular design sets it apart from many typical "General Chemistry II" courses offered internationally, which often dedicate more extensive coverage to physical chemistry topics such as advanced kinetics, chemical equilibrium, and electrochemistry as primary new content.</p>
+            <p>The distinct focus of CHM 102 at UNILAG suggests a deliberate pedagogical approach to introduce students to the fundamentals of organic and descriptive inorganic chemistry early in their university studies. This strategic decision prepares students for more specialized and advanced courses in these fields sooner, providing essential groundwork for future studies in areas such as organic synthesis, analytical techniques, and the properties of inorganic compounds, as well as their applications in allied sciences like biochemistry and materials science.</p>
+
+            <div class="my-8 p-6 bg-white rounded-lg shadow-md">
+                <h3 class="text-center !mt-0">Visualizing UNILAG CHM 102 Curriculum Emphasis</h3>
+                <p class="text-sm text-center text-neutral-600 mb-4">This chart illustrates the estimated relative focus on different areas within the CHM 102 course at UNILAG, based on the provided textbook outline's emphasis. It highlights the significant portion dedicated to organic and descriptive inorganic chemistry.</p>
+                <div class="chart-container">
+                    <canvas id="curriculumFocusChart"></canvas>
+                </div>
+            </div>
+
+            <h3>1.2 Key Learning Objectives for CHM 102</h3>
+            <p>A textbook for CHM 102 would guide students toward achieving several core learning objectives. These include developing a deeper understanding of chemical bonding principles, moving beyond basic structures to encompass complex bond types and the intricate geometries of molecules. A significant objective is to cultivate a fundamental grasp of organic chemistry, covering essential nomenclature, structural characteristics, reaction mechanisms, and the chemistry of major functional groups. Furthermore, the course aims to render students proficient in qualitative analysis techniques, applicable to both inorganic ions and organic compounds. Students are also expected to comprehend the chemistry of main group and transition elements, including their characteristic properties and common compounds. Finally, the course provides an introduction to the basic structures and functions of key biomolecules, and encourages the application of fundamental general chemistry principles, such as acid-base reactions and redox processes, within the context of organic and inorganic chemical reactions.</p>
+            <p>The comprehensive UNILAG CHM 102 outline [1] reveals a strong inclination towards organic chemistry and descriptive inorganic chemistry. In contrast, syllabi from other institutions or general chemistry textbooks [4, 5, 6, 7] often allocate substantial portions to topics like gases, solutions, kinetics, equilibrium, and electrochemistry in their second introductory chemistry courses. While some general chemistry topics are mentioned for CHM 102 in the UNILAG Engineering faculty's outline [2], they appear with less detail compared to the organic focus. This suggests that these general chemistry topics are either extensively covered in CHM 101 or are integrated and applied within the context of organic and inorganic reactions in CHM 102, rather than being introduced as standalone new units. Consequently, a 200-page textbook for UNILAG CHM 102 must allocate substantial space to organic chemistry fundamentals, qualitative analysis, and descriptive inorganic chemistry to accurately reflect this specific curriculum design.</p>
+        </section>
+
+        <section id="qualitative-analysis" class="content-section">
+            <h2>II. Foundational Concepts and Qualitative Analysis</h2>
+            <p class="italic text-neutral-700">This section delves into the practical aspects of chemical identification. It covers systematic methods for analyzing both inorganic ions and organic compounds, which are crucial for developing essential laboratory skills and understanding chemical properties through direct observation and testing.</p>
+            
+            <h3>2.1 Qualitative Analysis (Inorganic)</h3>
+            <p>The study of qualitative inorganic analysis introduces students to the systematic identification of simple cations and anions, typically in aqueous solutions.[1] This involves understanding fundamental principles such as solubility rules, the formation of precipitates, and the characteristic reactions exhibited by various ions. A typical textbook would detail tests for common cations, including those from Group I (e.g., Ag+, Pb2+, Hg2^2+), Group II (e.g., Cu2+, Cd2+, Bi3+, As3+, Sb3+, Sn2+), Group III (e.g., Fe2+, Fe3+, Al3+, Cr3+, Mn2+, Zn2+, Ni2+, Co2+), Group IV (e.g., Ba2+, Sr2+, Ca2+), and Group V (e.g., Mg2+, Na+, K+, NH4+). Similarly, it would cover tests for common anions such as carbonate (CO3^2-), sulfate (SO4^2-), chloride (Cl-), bromide (Br-), iodide (I-), nitrate (NO3-), and sulfide (S2-). The methodology for these analyses would be thoroughly discussed, including the appropriate use of reagents, the observation of distinctive precipitates, color changes, gas evolution, and the application of confirmatory tests. The inclusion of "Qualitative Analysis (Inorganic)" is explicitly stated in the UNILAG CHM 102 outline [1], and the laboratory schedule includes "Lab 1 Qualitative Analysis: Group I" and "Lab 7 Lab Practical 1," which would involve such tests.[4]</p>
+
+            <h3>2.2 Identification of Organic Compounds</h3>
+            <p>This segment focuses on the practical identification of organic substances. It begins with basic techniques for isolation and purification, such as distillation, recrystallization, sublimation, and various chromatographic methods, including HPLC.[1, 4] The course then delves into qualitative elemental analysis, which involves testing for the presence of common elements within organic compounds. This includes methods for detecting carbon and hydrogen (typically via combustion), nitrogen (using techniques like Lassaigne's test, Dumas, or Kjeldahl's methods), sulfur (via Lassaigne's test), and halogens (through Lassaigne's test, Beilstein test, or the Carius method).[1] Beyond elemental composition, the textbook would introduce preliminary tests designed to identify the presence of specific functional groups, such as unsaturation (alkenes/alkynes), alcohols, carbonyls (aldehydes/ketones), carboxylic acids, and amines. The UNILAG CHM 102 curriculum explicitly details "Identification of organic compounds to include: (i) Isolation and purification. (ii) Qualitative analysis: Test for common elements e. g. carbon, hydrogen, nitrogen. sulphur, halogens etc. (iii) Qualitative analysis using Dumas, Kjeldahl's and Carius methods".[1]</p>
+            <p>The curriculum's clear delineation of both inorganic and organic qualitative analysis as foundational topics highlights a deliberate effort to equip students with a broad spectrum of practical analytical skills. While the methodologies for identifying inorganic ions often rely on solubility and precipitation characteristics, organic analysis shifts focus to elemental composition and the reactivity of specific functional groups. This comprehensive approach ensures that students develop a versatile set of practical laboratory competencies applicable across different branches of chemistry. A textbook designed for this course would therefore dedicate substantial chapters or sections to each type of qualitative analysis, providing detailed experimental procedures, anticipated observations, and the underlying theoretical explanations for the chemical reactions involved. This emphasis on hands-on application is crucial for cultivating practical chemical intuition.</p>
+        </section>
+
+        <section id="bonding-structure" class="content-section">
+            <h2>III. Advanced Chemical Bonding and Molecular Structure</h2>
+            <p class="italic text-neutral-700">This section explores the fundamental forces governing how atoms combine and how these interactions dictate molecular shapes and properties. A deep understanding of chemical bonding is essential for predicting reactivity, especially in organic chemistry, and for interpreting the behavior of different states of matter.</p>
+
+            <h3>3.1 Principles of Chemical Bonding</h3>
+            <p>A comprehensive review of why and how atoms combine forms the initial part of this section.[1] The discussion then expands into an in-depth examination of various bond types. Ionic bonding is explored through its formation, the characteristic properties of ionic compounds, and the concept of lattice energy. Covalent bonding is detailed, covering the formation of single, double, and triple bonds, along with discussions on bond energy and bond length. A specific focus is placed on dative (coordinate) bonding, defining it and providing examples, particularly within complex ions.[1] The broader concept of complex bonding is introduced, including coordination compounds, ligands, and coordination number.[1] Metallic bonding is explained through the electron sea model and its implications for the properties of metals.[1] The polarity of bonds, determined by electronegativity differences, and its influence on molecular dipole moments and overall molecular properties are also thoroughly covered.[1, 5, 6] The UNILAG CHM 102 outline explicitly lists "Chemical bonding. Why and how do atoms combine? The molecule and chemical bonding; electrons in. molecules; ionic, covalent, dative and complex bonding; polarity of bonds; coordinate. bonds; metallic bonds".[1]</p>
+
+            <h3>3.2 Molecular Geometry and Hybridization</h3>
+            <p>Building upon basic bonding concepts, this section reviews the drawing of Lewis electron dot diagrams.[4, 6] It then introduces the Valence Shell Electron Pair Repulsion (VSEPR) theory, demonstrating its application in determining molecular geometry and predicting the shapes of simple molecules.[4, 5, 6] A detailed explanation of hybridization follows, covering sp, sp2, and sp3 hybridization in carbon and other atoms, and elucidating its critical role in defining molecular geometry.[1, 2, 4] The concept of resonance structures and their significance in describing delocalized bonding is also presented.[1] Finally, the relationship between individual bond polarity and the overall molecular polarity is discussed, providing a complete picture of molecular structure.[4, 5] The UNILAG curriculum explicitly includes "Hybridization and resonance in chemical bonding" [1], with specific mentions of "Shapes of Molecules," "VSEPR, molecular polarity, hybridization," and "Hybridization and Multiple Bonds" [4], as well as "Hybridisation and shapes of simple molecules".[2]</p>
+
+            <h3>3.3 Crystalline Structures</h3>
+            <p>This part introduces the fundamental concepts of how atoms, ions, or molecules arrange themselves in solid states. It differentiates between various types of solids, including ionic, molecular, covalent network, and metallic solids. Common crystalline structures are discussed, with examples such as the sodium chloride (NaCl) rock salt structure and various metallic lattices.[1] The UNILAG CHM 102 outline specifically mentions "basic crystalline structure e. g. NaCl and metallic lattices" [1], and related topics like "Structure of Solids" and "Bonding in Solids" are also noted.[2, 4]</p>
+            <p>The extensive coverage of hybridization (sp, sp2, sp3), resonance, VSEPR theory, and bond polarity within the curriculum represents a crucial foundational bridge to organic chemistry. These concepts are indispensable for understanding the intricate structures, reactivity patterns, and physical properties of organic molecules, which constitute a major component of CHM 102. For instance, sp3 hybridization explains the tetrahedral geometry characteristic of alkanes, sp2 hybridization clarifies the planar geometry found in alkenes and aromatic compounds, and sp hybridization accounts for the linear geometry observed in alkynes. Similarly, the concept of resonance is key to understanding the stability of conjugated systems. The depth and placement of these bonding topics indicate that they serve as a direct and essential link from general chemistry principles to the specific demands of organic chemistry. Without a firm grasp of these ideas, students would face significant challenges in comprehending subsequent organic content. A 200-page textbook would therefore dedicate substantial sections to these advanced bonding concepts, incorporating numerous examples, particularly those relevant to organic compounds, to solidify student understanding before transitioning into dedicated organic chemistry sections.</p>
+        </section>
+
+        <section id="intro-organic" class="content-section">
+            <h2>IV. Introduction to Organic Chemistry</h2>
+            <p class="italic text-neutral-700">This pivotal section introduces the vast and fascinating world of carbon compounds. It lays the essential groundwork for understanding organic reactions, nomenclature, and the diverse structures that carbon's unique bonding capabilities allow, forming a cornerstone of the CHM 102 curriculum.</p>
+
+            <h3>4.1 Fundamentals of Organic Chemistry</h3>
+            <p>The section begins with a definition of 'Organic Chemistry,' tracing its historical development and highlighting its immense importance in various scientific disciplines.[1, 2] A key focus is placed on the unique ability of carbon to form stable bonds with itself and a wide array of other elements, leading to an extraordinary diversity of molecular structures. A detailed review of sp3, sp2, and sp hybridization is provided, specifically as it applies to carbon atoms, dictating the characteristic molecular geometry around carbon centers.[1] The relationship between molecular structure—including bond length, bond strength, and bond rotation—and the macroscopic physical properties of organic compounds, such as boiling point, melting point, and solubility, is thoroughly explored.[1] The UNILAG curriculum explicitly includes "Introduction to Organic Chemistry. Introduction to the term 'Organic Chemistry'; Hybridization in carbon - sp3, sp2 and sp. Hybridization. Physical properties as related to structures- bond length, strength, rotation. etc.".[1]</p>
+
+            <h3>4.2 Principles of Organic Reactions</h3>
+            <p>This part delves into the fundamental principles governing how organic reactions occur. It defines and identifies electrophiles and nucleophiles, providing examples, including how common acids and bases can function as either.[1] The mechanisms of bond breaking are explained, distinguishing between homolytic and heterolytic fission, which lead to the formation of radicals, carbocations, and carbanions, respectively.[1] The various factors that influence organic reactions are discussed in detail. These include inductive effects, which describe the electron-donating or electron-withdrawing nature of groups through sigma bonds, and mesomeric (resonance) effects, which involve electron delocalization through pi systems.[1] Steric factors, referring to the influence of molecular size and shape on reactivity, are also considered.[1] The UNILAG outline specifically lists "Electrophiles and Nucleophiles - Examples to include acids and bases; Homolytic and. heterolytic fission of bonds; factors influencing organic reactions – inductive and. mesomeric effects, steric factors etc." [1], with a general mention of "Introductory reaction mechanism and kinetics".[2]</p>
+
+            <h3>4.3 Homologous Series and Isomerism</h3>
+            <p>The concept of a homologous series, defined as a series of compounds sharing the same functional group but differing by a repeating CH2 unit, is introduced.[1] This leads to an overview of common functional groups and their characteristic chemical properties. The major types of organic reactions—including addition, substitution, elimination, and rearrangement reactions—are surveyed.[1] A detailed discussion on isomerism follows, distinguishing between structural (constitutional) isomerism (chain, positional, and functional group isomers) and stereoisomerism. Stereoisomerism is further broken down into geometrical (cis-trans) isomerism, particularly in alkenes and cyclic compounds, and optical isomerism, which covers concepts like chirality, enantiomers, diastereomers, optical activity, and specific rotation.[1] The UNILAG curriculum explicitly covers "( a) Homologous series and functional groups' chemistry; Types of organic reactions; Isomerism structural, geometrical and optical isomers" [1], with "Stereochemistry" also mentioned.[2]</p>
+            <p>The explicit inclusion of concepts such as electrophiles and nucleophiles, homolytic and heterolytic fission, and the various factors influencing organic reactions (inductive, mesomeric, and steric effects) early in CHM 102 signifies a curriculum that prioritizes a mechanistic understanding of organic chemistry. This means the course aims to teach students *how* organic reactions occur, focusing on the underlying electron movement and energy considerations, rather than merely memorizing reaction products. This approach is more advanced for an introductory course and provides a robust foundation. A 200-page textbook would therefore dedicate substantial space to illustrating these mechanistic principles with clear diagrams and numerous examples, directly linking them to the reactivity of different functional groups. This early emphasis on reaction mechanisms is crucial for developing sophisticated problem-solving skills in organic chemistry as students progress to more advanced courses.</p>
+        </section>
+
+        <section id="hydrocarbons" class="content-section">
+            <h2>V. Chemistry of Hydrocarbons and Derivatives</h2>
+            <p class="italic text-neutral-700">This section focuses on the simplest organic compounds—hydrocarbons—and their closely related derivatives. It covers their nomenclature, structural features, physical properties, and fundamental reaction types, providing a systematic entry point into the study of organic reactivity.</p>
+
+            <h3>5.1 Alkanes, Alkenes, and Alkynes</h3>
+            <p>The study begins with the systematic nomenclature of hydrocarbons, covering both IUPAC and common naming conventions for straight-chain and branched alkanes, alkenes (including cis/trans isomerism), and alkynes.[1] A detailed discussion of their structure and bonding follows, emphasizing the role of sp3, sp2, and sp hybridization in determining the characteristic geometries of these compounds. The physical properties of hydrocarbons, such as trends in boiling points, melting points, and solubility, are explained in relation to their molecular size and shape. General methods for synthesizing alkanes, alkenes, and alkynes are also introduced. The reactivity of these compounds is then explored: alkanes are discussed in the context of free radical substitution reactions, such as halogenation; alkenes are examined through their electrophilic addition reactions, including hydrogenation, halogenation, hydrohalogenation, and hydration, with an emphasis on Markovnikov's rule; and alkynes are covered in terms of their addition reactions, which are similar to alkenes but involve two pi bonds. The UNILAG curriculum explicitly includes "Chemistry of Hydrocarbons – alkanes, alkenes and alkynes" [1], and general chemistry textbooks also cover "Hydrocarbons".[6]</p>
+
+            <h3>5.2 Alkyl Halides and Grignard Reagents</h3>
+            <p>This subsection introduces alkyl halides, covering their nomenclature, structure, and common preparation methods. A fundamental aspect of their chemistry involves an introduction to nucleophilic substitution reactions (SN1 and SN2) and elimination reactions (E1 and E2), highlighting the various factors that influence the preferred reaction pathway. The discussion then moves to Grignard reagents, powerful organometallic compounds whose preparation (typically from alkyl halides and magnesium) and utility as nucleophiles in organic synthesis are detailed.[1] The UNILAG outline specifically lists "alkyl halides and. Grignard reagents".[1]</p>
+
+            <h3>5.3 Introduction to Aromatic Compounds</h3>
+            <p>A basic introduction to aromatic compounds is provided, with a primary focus on benzene. This includes discussions on its unique structure, characterized by resonance and electron delocalization, and the concept of aromaticity, often explained through Hückel's rule (the 4n+2 rule). The nomenclature for naming simple aromatic compounds, such as benzenes with one or two substituents, is covered. The section concludes with an introduction to basic reactions of aromatic compounds, particularly electrophilic aromatic substitution reactions, including nitration, halogenation, sulfonation, and Friedel-Crafts alkylation and acylation.[1]</p>
+            <p>The curriculum's inclusion of specific reaction types for hydrocarbons (free radical substitution, electrophilic addition) and alkyl halides (nucleophilic substitution, elimination) represents an early exposure to major classes of organic reactions. These reaction types form the cornerstone of organic chemistry, each possessing distinct mechanisms and reactivity patterns. Introducing these fundamental reaction types early in the course, immediately following the coverage of basic structure and bonding, enables students to develop a practical understanding of organic reactivity from the ground up. This systematic approach prepares them effectively for the more complex reactions encountered with functionalized compounds later in their studies. A 200-page textbook would provide clear, step-by-step mechanisms for these reactions, accompanied by numerous examples and practice problems, to reinforce the concepts of electron flow and intermediate stability. This early immersion in reaction mechanisms is crucial for developing robust problem-solving skills in organic chemistry.</p>
+        </section>
+
+        <section id="main-group-transition" class="content-section">
+            <h2>VI. Main Group and Transition Metal Chemistry</h2>
+            <p class="italic text-neutral-700">This section provides a descriptive overview of the chemistry of various elements from the periodic table. It emphasizes periodic trends, the unique characteristics of main group elements, and the distinctive properties of transition metals, including their coordination complexes.</p>
+
+            <h3>6.1 Main Group Elements (Groups I, II, III-V, VI, VII)</h3>
+            <p>The study of main group elements begins with a comprehensive discussion of periodic trends in properties such as atomic size, ionization energy, electronegativity, electron affinity, and the gradual transition from metallic to non-metallic character across periods and down groups.[1] The structures of various elemental allotropes, like those of carbon and sulfur, are also examined. The properties of selected compound types are explored, including hydrides (e.g., NH3, H2S), their formation, properties, and reactivity; oxides, categorized as acidic, basic, amphoteric, or neutral (e.g., CO2, SO2, Al2O3); and the general properties of common inorganic acids and bases.[1] Specific element chemistry is then detailed: the unique properties and uses of hydrogen and noble gases; the reactivity, compounds, and diagonal relationships of alkali metals (Group I) and alkali earth metals (Group II); and the chemistry of specific elements within Groups III-V (e.g., Boron and Aluminum, Carbon and Lead, Nitrogen and Bismuth) and Groups VI-VII (e.g., Oxygen and Sulfur, Fluorine and Chlorine).[1] The UNILAG curriculum extensively covers these topics, including "Chemistry of hydrogen, noble gases, Alkali metals (Group I) and the alkali earth. metals (Group II)," and detailed "Main Group Chemistry (Groups III – V)" and "Main Group Chemistry (Group VI and VII)".[1]</p>
+
+            <h3>6.2 Transition Metal Chemistry</h3>
+            <p>This part introduces the general characteristics of d-block elements, including their variable oxidation states, the formation of colored compounds, their catalytic activity, and their propensity for complex formation.[1] The electronic configurations of transition metals, including common exceptions to general filling rules, are discussed.[1] A brief introduction to the f-block elements, the lanthanides and actinides, and their distinctive properties is also provided.[1] A significant portion is dedicated to coordination complexes, covering their introduction, the role of ligands, coordination numbers, and the systematic IUPAC nomenclature for naming these complexes.[1] Finally, the chemistry of specific transition metals, such as Chromium (Cr), Iron (Fe), Cobalt (Co), Nickel (Ni), and Copper (Cu), is examined, with particular attention to their most common oxidation states and representative compounds.[1] The UNILAG outline explicitly lists "Transition Series; Properties of element and compounds of d – block elements, lanthanides and actinides; Electronic configuration; complexes and IUPAC nomenclature of. complexes; Chemistry of Cr, Fe, Co, Ni and Cu; particularly of the most common oxidation. states".[1]</p>
+            <p>The broad listing of main group and transition metals, including specific elements and compound types, in the UNILAG curriculum implies a need for a balanced approach to descriptive chemistry. Given the 200-page limit for a textbook that also covers extensive organic chemistry, the course likely emphasizes general *trends* and *representative examples* rather than exhaustive detail for every single element. For instance, in the context of transition metals, the focus would be on their general properties and common oxidation states of key metals, rather than delving into detailed reaction mechanisms for each. This approach allows for comprehensive breadth without sacrificing the necessary depth required for understanding fundamental principles. A textbook would present this material thematically, highlighting periodic trends and structure-property relationships, rather than adopting a purely element-by-element approach. It would utilize tables and diagrams to summarize properties and illustrate key reactions of representative compounds, enabling students to grasp the underlying principles of inorganic chemistry without being overwhelmed by excessive minutiae.</p>
+        </section>
+
+        <section id="functional-groups" class="content-section">
+            <h2>VII. Functional Group Chemistry</h2>
+            <p class="italic text-neutral-700">This section systematically explores major classes of organic compounds based on their characteristic functional groups. For each group, it details nomenclature, preparation methods, structural features, physical properties, and typical reactions, building a comprehensive understanding of organic reactivity.</p>
+            
+            <h3>7.1 Alcohols, Ethers, Aldehydes, and Ketones</h3>
+            <p>The study of oxygen-containing functional groups begins with their systematic nomenclature, covering both IUPAC and common naming conventions for alcohols (compounds with hydroxyl groups), ethers, aldehydes, and ketones.[1] The characteristic bonding features of each functional group are discussed, such as the sp3 hybridized oxygen in alcohols and ethers, and the sp2 hybridized carbon in aldehydes and ketones. The influence of intermolecular forces, including hydrogen bonding (in alcohols), polarity, and molecular weight, on physical properties like boiling points and solubility is thoroughly examined. Common synthetic routes for their preparation are introduced, such as the reduction of carbonyl compounds to alcohols or the oxidation of alcohols to aldehydes and ketones. The general reactions characteristic of these functional groups are then explored: alcohols undergo oxidation, dehydration, and reactions with active metals; ethers are discussed in terms of their cleavage reactions; and aldehydes and ketones are central to nucleophilic addition reactions, including the formation of acetals/ketals, reactions with Grignard reagents, and various reduction reactions. The UNILAG curriculum specifically lists "Chemistry of Alcohols, Ethers, Aldehydes and Ketones; Carboxylic acids, Derivatives and. Amines Nomenclature (IUPAC); Preparation, structure, Physical properties and general. reaction".[1]</p>
+
+            <h3>7.2 Carboxylic Acids, Derivatives, and Amines</h3>
+            <p>This segment extends to other vital functional groups, starting with their nomenclature, including carboxylic acids, esters, amides, acid chlorides, and amines.[1] The characteristic structural and bonding features of the carboxyl, carbonyl, and amino groups are detailed. The physical properties, such as the strong hydrogen bonding observed in carboxylic acids and primary/secondary amines, and its impact on their boiling points and solubility, are discussed. Common preparation methods for these compounds are presented, including the synthesis of carboxylic acids (e.g., via oxidation of primary alcohols or hydrolysis of nitriles), esters (through esterification), and amides. The general reactions characteristic of these functional groups are then covered: carboxylic acids are discussed in terms of their acidity, salt formation, and esterification reactions; carboxylic acid derivatives are explored through their nucleophilic acyl substitution reactions (e.g., hydrolysis of esters and amides); and amines are examined for their basicity, reactions with acids, and acylation reactions. The UNILAG curriculum explicitly includes "Carboxylic acids, Derivatives and. Amines Nomenclature (IUPAC); Preparation, structure, Physical properties and general. reaction".[1]</p>
+            <p>The systematic progression from hydrocarbons to functional groups containing oxygen and nitrogen, covering nomenclature, preparation, physical properties, and reactions for each, mirrors the typical organization of organic chemistry textbooks. This structured approach is fundamental for students to develop a coherent and comprehensive understanding of organic chemistry. It enables them to categorize and predict reactions based on the presence of specific functional groups, fostering a deeper comprehension rather than treating each reaction as an isolated event. A 200-page textbook would dedicate distinct chapters or substantial sections to each major functional group. It would emphasize the characteristic reactions of each group, often illustrating common mechanistic pathways (e.g., nucleophilic addition to carbonyls, nucleophilic acyl substitution). The text would provide numerous examples and practice problems to solidify the understanding of structure-reactivity relationships.</p>
+        </section>
+
+        <section id="biomolecules" class="content-section">
+            <h2>VIII. Introduction to Biomolecules</h2>
+            <p class="italic text-neutral-700">This section provides a foundational look at the major classes of biological molecules. It highlights their fundamental structures and roles, serving as an important bridge between core organic chemistry principles and the more specialized field of biochemistry, showcasing the relevance of chemistry to life sciences.</p>
+
+            <h3>8.1 Carbohydrates</h3>
+            <p>The study of carbohydrates begins with their classification into monosaccharides (e.g., glucose, fructose), disaccharides (e.g., sucrose, lactose), and polysaccharides (e.g., starch, cellulose, glycogen).[1] Their structural aspects are discussed, including the open-chain and cyclic forms of monosaccharides and the formation of glycosidic bonds that link monosaccharide units. The basic properties and primary biological functions of carbohydrates, such as their roles in energy storage and structural support, are also covered. The UNILAG curriculum explicitly lists "Carbohydrates, Proteins and Lipids; simple treatment of carbohydrates – monosaccharides, disaccharides and polysaccharides".[1]</p>
+
+            <h3>8.2 Proteins</h3>
+            <p>Proteins are introduced through their fundamental building blocks, amino acids. The structure and classification of amino acids (e.g., essential vs. non-essential) are discussed, along with the concept of zwitterions. The formation of peptide bonds, which link amino acids to form dipeptides and polypeptides, is explained.[1] An introduction to the hierarchical levels of protein structure—primary, secondary (e.g., alpha-helix, beta-pleated sheet), tertiary, and quaternary structures—is provided. The basic functions of proteins, such as their roles as enzymes, structural components, and transport molecules, are also covered. The UNILAG curriculum mentions "Protein – amino acids, peptide bonds etc.".[1]</p>
+
+            <h3>8.3 Lipids</h3>
+            <p>The section on lipids focuses on fats and oils, detailing their structure as triglycerides and distinguishing between saturated and unsaturated fatty acids.[1] The basic chemistry of saponification, the process by which fats are converted into soap, and the concept of micelle formation in detergents are also introduced.[1] The UNILAG curriculum lists "Lipids – Fats and Oils, Soap and Detergent".[1]</p>
+            <p>The inclusion of carbohydrates, proteins, and lipids in an introductory chemistry course demonstrates the curriculum's commitment to highlighting the practical and biological relevance of organic chemistry. These biomolecules are complex organic compounds with critical biological functions, and their study directly applies the principles of organic functional groups, bonding, and isomerism learned earlier in the course. This section serves to motivate students by showcasing the real-world impact of chemistry and provides a foundational glimpse into biochemistry. It effectively bridges the gap between pure organic chemistry and its applications in biological systems. A 200-page textbook would provide a concise yet clear overview of the basic structures and functions of these biomolecules, emphasizing the chemical bonds and functional groups that define them, without delving into detailed biochemical pathways.</p>
+        </section>
+
+        <section id="general-principles" class="content-section">
+            <h2>IX. General Chemistry Principles (Revisited/Applied in CHM 102 Context)</h2>
+            <p class="italic text-neutral-700">This section revisits fundamental general chemistry principles, likely introduced in CHM 101, and discusses their application within the specific context of CHM 102 topics. This integration ensures that foundational concepts are reinforced and seen in action within organic and inorganic chemistry, providing a more holistic understanding.</p>
+
+            <h3>9.1 Gases and Intermolecular Forces</h3>
+            <p>A concise review of gas laws, including the Ideal Gas Equation and the behavior of gas mixtures and partial pressures, would be included.[4] The Kinetic Molecular Theory is revisited to explain gas behavior at a molecular level [4, 6], along with a brief discussion on deviations from ideal gas behavior in real gases.[4] A crucial component is the detailed explanation of intermolecular forces (IMFs), covering types such as dispersion forces, dipole-dipole interactions, and hydrogen bonding, and their profound impact on the physical properties of liquids and solids.[4, 5, 6] Concepts related to phase changes and phase diagrams, including vapor pressure, boiling point, and melting point, are also reviewed.[4, 5, 6] Although the primary UNILAG CHM 102 outline [1] does not explicitly list "Gases" or "Liquids/Solids" as major units, the UNILAG Engineering outline for CHM 102 does mention "Properties of gases" [2], and a general chemistry syllabus [4] covers these in detail. This suggests that these topics are either briefly reviewed or their principles are applied within CHM 102, particularly IMFs, which are crucial for understanding the physical properties of organic compounds. A 200-page textbook would likely include a concise review of these topics, emphasizing their relevance to the core CHM 102 material.</p>
+
+            <h3>9.2 Solutions and Colligative Properties</h3>
+            <p>This segment would cover the process of solution formation and factors affecting solubility.[4] Various ways of expressing concentration, such as molarity, molality, and percent concentration, are reviewed.[4, 7] The colligative properties of solutions—vapor pressure lowering, boiling point elevation, freezing point depression, and osmotic pressure—are discussed.[4, 5, 6] A basic understanding of colloids is also provided.[4] These topics are standard in general chemistry.[4, 5, 6, 7] While the main UNILAG CHM 102 outline [1] does not explicitly list them, their presence in a detailed general chemistry syllabus [4] suggests they are commonly part of a second-semester general chemistry course. For a UNILAG CHM 102 textbook, these might be presented as a concise chapter or a review, especially if CHM 101 covers them in depth, or if they are relevant for understanding specific experimental procedures like molecular weight determination or freezing point lowering.</p>
+
+            <h3>9.3 Chemical Kinetics and Equilibrium</h3>
+            <p>The principles of chemical kinetics are introduced, including factors affecting reaction rates, rate laws, and the order of reactions.[2, 3, 4] The influence of temperature on reaction rates, encompassing activation energy and the Arrhenius equation, is discussed.[4] Concepts of reaction mechanisms, including elementary steps and molecularity, and the role of catalysts are also covered.[4] The fundamental concept of chemical equilibrium is explored, including the equilibrium constant (Keq) and heterogeneous equilibria.[2, 3, 4] Le Châtelier's Principle is applied to predict shifts in equilibrium.[4] The explicit mention of "rates of reaction" and "equilibrium" in the UNILAG Engineering outline for CHM 101 and "Introductory reaction mechanism and kinetics" for CHM 102 [2] suggests that while foundational kinetics and equilibrium might be covered in CHM 101, CHM 102 might revisit them, particularly in the context of organic reaction mechanisms. A 200-page textbook would likely include a concise chapter on these, focusing on their application in understanding organic reaction feasibility and pathways.</p>
+
+            <h3>9.4 Acids, Bases, and Electrochemistry</h3>
+            <p>This section covers the Brønsted-Lowry theory of acids and bases, the autoionization of water, and the pH scale.[4, 6] Discussions include strong and weak acids and bases, the relationship between Ka and Kb, and the acid-base properties of salts.[4] Lewis acids and bases are also introduced.[4] Concepts like the common ion effect, buffers, and titrations are explained.[4, 7] Redox reactions are covered, including assigning oxidation numbers and balancing redox equations.[2, 4, 5, 6, 7] An introduction to electrochemistry includes voltaic cells, cell electromotive force (EMF), the spontaneity of redox reactions, and electrolysis.[2, 4, 6] Finally, solubility equilibria, specifically the solubility product (Ksp) and factors affecting solubility, are discussed.[4] These topics are fundamental to chemistry, and their explicit listing for CHM 102 [2] indicates their importance. A textbook would focus on applying these principles, for example, understanding the acidity or basicity of organic functional groups or the redox reactions involved in transition metal chemistry.</p>
+            <p>While the most detailed UNILAG CHM 102 curriculum outline [1] emphasizes organic and descriptive inorganic chemistry, other supporting documents and general chemistry syllabi [2, 4, 5, 6, 7] consistently include core general chemistry topics such as gases, solutions, kinetics, equilibrium, acids/bases, and redox reactions. It is highly probable that many of these "general chemistry" topics are covered in CHM 101 as prerequisites. However, their continued mention for CHM 102 [2] or their inherent necessity for understanding advanced organic and inorganic concepts (e.g., acid-base properties of organic compounds, solubility in qualitative analysis) means they are either briefly reviewed or implicitly applied. A 200-page UNILAG CHM 102 textbook would therefore likely not dedicate full, introductory chapters to these general chemistry topics if they are extensively covered in CHM 101. Instead, it would integrate them as needed, perhaps with concise review sections or by directly applying the principles to the organic and inorganic content. For example, acid-base chemistry would be crucial for understanding the reactivity of carboxylic acids and amines. This approach ensures that the textbook effectively utilizes its page limit for the core CHM 102 material, while acknowledging the assumed prior knowledge from CHM 101, consistent with the "UNILAG FORMAT."</p>
+        </section>
+
+        <section id="lab-components" class="content-section">
+            <h2>X. Laboratory Components and Practical Applications</h2>
+            <p class="italic text-neutral-700">This section highlights the crucial practical dimension of CHM 102. It outlines typical experiments designed to reinforce theoretical concepts, develop hands-on laboratory skills, and introduce students to various experimental methodologies, all while emphasizing laboratory safety.</p>
+
+            <h3>10.1 Overview of Laboratory Work</h3>
+            <p>The laboratory component of CHM 102 is integral to the learning process. Its primary purpose is to enable students to develop essential practical skills, reinforce theoretical concepts learned in lectures, and introduce them to various experimental methodologies. A strong emphasis is placed on adhering to strict laboratory safety rules and procedures throughout all experimental work.</p>
+
+            <h3>10.2 Typical CHM 102 Laboratory Experiments</h3>
+            <p>The laboratory curriculum for CHM 102 is diverse, encompassing both inorganic and organic analytical techniques, as well as applications of physical chemistry principles. Below is a summary of typical experiments:</p>
+            
+            <div class="overflow-x-auto shadow-md rounded-lg">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Experiment Examples</th>
+                            <th>Relevance to Course Content</th>
+                            <th>Source Reference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Qualitative Analysis</strong></td>
+                            <td>Qualitative Analysis: Group I Cations</td>
+                            <td>Identification of simple inorganic ions [1, 4]</td>
+                            <td>[4]</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Identification of Organic Compounds (Elemental Tests)</td>
+                            <td>Tests for C, H, N, S, Halogens in organic samples [1]</td>
+                            <td>[1]</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Functional Group Tests for Organic Compounds</td>
+                            <td>Preliminary identification of alcohols, carbonyls, acids, etc. [1]</td>
+                            <td>[1]</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Physical Chemistry Applications</strong></td>
+                            <td>Gas Laws (e.g., Molecular Weight Determination of Butane Gas)</td>
+                            <td>Application of Ideal Gas Law and gas properties [4]</td>
+                            <td>[4]</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Intermolecular Forces: Evaporation of Alcohols</td>
+                            <td>Demonstrates impact of IMFs on physical properties [4]</td>
+                            <td>[4]</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Colligative Properties: Freezing Point Lowering</td>
+                            <td>Illustrates how solutes affect solvent properties [4]</td>
+                            <td>[4]</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Kinetics (e.g., Determination of Reaction Rates)</td>
+                            <td>Study of factors influencing reaction speed [4]</td>
+                            <td>[4]</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Equilibrium Constant, Keq Determination</td>
+                            <td>Experimental determination of equilibrium position [4]</td>
+                            <td>[4]</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Solubility Product, Ksp of PbI2</td>
+                            <td>Investigation of solubility equilibria [4]</td>
+                            <td>[4]</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>pH Study</td>
+                            <td>Practical understanding of acid-base concepts [4]</td>
+                            <td>[4]</td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>Titrations: Determination of Molarities of Strong & Weak Acids</td>
+                            <td>Quantitative analysis using acid-base reactions [4]</td>
+                            <td>[4]</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Separation Techniques</strong></td>
+                            <td>Chromatography II: HPLC</td>
+                            <td>Introduction to advanced separation methods [4]</td>
+                            <td>[4]</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Practical Examinations</strong></td>
+                            <td>Lab Practical 1 & 2, Quizzes</td>
+                            <td>Assessment of practical skills and theoretical understanding [4]</td>
+                            <td>[4]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>The comprehensive list of specific laboratory experiments, ranging from qualitative analysis to gas laws, kinetics, and titrations [4], highlights that the laboratory component is an integral and indispensable part of CHM 102. These hands-on experiences directly reinforce the theoretical concepts discussed in the textbook, particularly those related to general chemistry principles and qualitative analysis. The practical work provides students with direct experience in applying scientific methodologies, collecting and analyzing data, and interpreting experimental results. A textbook designed for this course would support this practical learning by providing the necessary background theory, illustrative calculation examples, and potentially pre-lab questions or post-lab analysis guidance for these common experiments. This integration ensures that the textbook aligns with the "UNILAG FORMAT" by acknowledging and supporting the crucial practical learning outcomes of the course.</p>
+        </section>
+
+        <section id="conclusion" class="content-section">
+            <h2>Conclusion</h2>
+            <p class="italic text-neutral-700">This concluding section summarizes the distinctive nature of the CHM 102 curriculum at the University of Lagos. It reiterates the course's strong emphasis on organic and descriptive inorganic chemistry, its focus on mechanistic understanding, and the importance of its integrated laboratory components, positioning CHM 102 as a key foundational course for students in chemical and allied sciences.</p>
+            <p>The CHM 102 curriculum at the University of Lagos, as detailed in its course outlines, presents a distinct and specialized approach to introductory chemistry. Unlike many conventional "General Chemistry II" courses that delve deeply into advanced physical chemistry topics, UNILAG's CHM 102 places a pronounced emphasis on foundational organic chemistry, descriptive inorganic chemistry, and practical qualitative analysis. This unique curricular design suggests a deliberate strategy to introduce students to these specialized areas early in their academic journey, preparing them for more advanced studies in these fields.</p>
+            <p>The detailed exploration of chemical bonding, including hybridization and molecular geometry, serves as a critical bridge, providing the necessary theoretical framework for understanding the structure and reactivity of organic molecules. The early introduction to mechanistic principles in organic reactions, such as electrophiles, nucleophiles, and bond fission, signifies an educational philosophy that prioritizes a deep understanding of *how* reactions occur, rather than rote memorization. This approach is more sophisticated for an introductory course and lays a robust foundation for future organic chemistry studies. Similarly, the systematic treatment of hydrocarbons and various functional groups, coupled with the descriptive chemistry of main group and transition elements, ensures a comprehensive, yet manageable, breadth of knowledge within the constraints of a 200-page textbook.</p>
+            <p>While core general chemistry principles like gases, solutions, kinetics, equilibrium, acids, bases, and electrochemistry are fundamental to chemistry, their treatment in CHM 102 is likely either a concise review or an application within the context of the primary organic and inorganic content, building upon knowledge acquired in CHM 101. This strategic integration prevents redundancy and efficiently utilizes the course's scope. The significant laboratory component, encompassing both inorganic and organic qualitative analysis, as well as various physical chemistry experiments, underscores the practical, hands-on nature of the course. These practical experiences are vital for solidifying theoretical understanding and developing essential analytical skills.</p>
+            <p>In essence, a typical 200-page textbook for UNILAG's CHM 102 would be characterized by its strong focus on organic and descriptive inorganic chemistry, its emphasis on mechanistic understanding, and its integration of practical laboratory applications. It would serve as a crucial stepping stone for students pursuing further studies in various chemical and allied scientific disciplines.</p>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('#mainNav .nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            function setActiveSection(targetId) {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.dataset.target === targetId) {
+                        link.classList.add('active');
+                    }
+                });
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    }
+                });
+                 document.querySelector('main').scrollTop = 0;
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.dataset.target;
+                    setActiveSection(targetId);
+                });
+            });
+
+            setActiveSection('overview');
+
+            const ctx = document.getElementById('curriculumFocusChart').getContext('2d');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [
+                            'Organic Chemistry Focus', 
+                            'Descriptive Inorganic Chem Focus', 
+                            'Qualitative Analysis Focus', 
+                            'Applied Gen Chem Principles'
+                        ],
+                        datasets: [{
+                            label: 'Curriculum Emphasis',
+                            data: [40, 25, 15, 20], 
+                            backgroundColor: [
+                                'rgba(59, 130, 246, 0.7)',  // blue-500
+                                'rgba(16, 185, 129, 0.7)', // emerald-500
+                                'rgba(239, 68, 68, 0.7)',   // red-500
+                                'rgba(249, 115, 22, 0.7)'  // orange-500
+                            ],
+                            borderColor: [
+                                'rgba(59, 130, 246, 1)',
+                                'rgba(16, 185, 129, 1)',
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(249, 115, 22, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    boxWidth: 20,
+                                    padding: 20,
+                                    font: {
+                                        size: 11
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed !== null) {
+                                            label += context.parsed + '%';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
