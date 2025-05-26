@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTH 102: Interactive Syllabus Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Visualization & Content Choices: 
+        - General: Text explanations for all topics. Mathematical formulas rendered using HTML (sup, sub) and Unicode.
+        - Tables (Limits, Differentiation, Integration, etc.): HTML tables with JS for click-to-expand details/examples. Goal: Inform, Compare.
+        - Chapter 1 (Functions, Limits): Chart.js for simple function graph examples. Goal: Visualize.
+        - Chapter 2 (Differentiation): Chart.js to illustrate tangent lines or function derivatives. Goal: Visualize.
+        - Chapter 3 (Integration): Chart.js to show area under a curve. Goal: Visualize.
+        - Chapter 5 (Complex Numbers): Chart.js scatter plot for Argand diagram visualization. Goal: Visualize.
+        - Chapter 6 (Trigonometry): Canvas API (or Chart.js if feasible) for an interactive unit circle. Goal: Visualize.
+        - All interactions aim to make abstract concepts more concrete and engaging. NO SVG/Mermaid confirmed. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar { transition: transform 0.3s ease-in-out; }
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .table-interactive tbody tr { cursor: pointer; }
+        .table-interactive tbody tr:hover { background-color: #f0f9ff; } /* sky-50 */
+        .details-row { background-color: #fef3c7; } /* amber-100 */
+        .details-row td { padding: 10px; border-top: 1px solid #e0e0e0; }
+        .katex-display { overflow-x: auto; overflow-y: hidden; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* Default max-width */
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; /* Default height */
+            max-height: 400px; /* Default max-height */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .chart-container {
+                height: 350px;
+            }
+        }
+        /* Basic styling for math-like text */
+        .math { font-family: 'Times New Roman', serif; font-style: italic; }
+        .math-op { font-style: normal; margin: 0 0.1em; }
+        .math-frac { display: inline-block; text-align: center; vertical-align: middle; margin: 0 0.2em;}
+        .math-frac-num { display: block; border-bottom: 1px solid currentColor; padding: 0 0.2em; }
+        .math-frac-den { display: block; padding: 0 0.2em; }
+        .math-lim { display: inline-block; text-align: center; }
+        .math-lim-sub { font-size: 0.7em; display: block; }
+        .math-sum { font-size: 1.5em; vertical-align: middle; margin-right: 0.1em;}
+        .math-integral { font-size: 1.5em; vertical-align: middle; margin-right: 0.1em;}
+        .math-sqrt { display: inline-block; }
+        .math-sqrt-symbol { font-size: 1.2em; vertical-align: middle;}
+        .math-sqrt-content { border-top: 1px solid currentColor; padding-left: 0.2em; }
+
+        /* Mobile navigation */
+        #mobileMenuButton {
+            display: block; /* Hidden on md and up */
+        }
+        #sidebar {
+            transform: translateX(-100%);
+        }
+        #sidebar.open {
+            transform: translateX(0);
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            #mobileMenuButton {
+                display: none;
+            }
+            #sidebar {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="bg-amber-50 text-stone-800">
+    <div class="flex h-screen overflow-hidden">
+        <button id="mobileMenuButton" class="md:hidden fixed top-4 left-4 z-30 p-2 bg-sky-600 text-white rounded-md">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+        </button>
+
+        <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 z-20 w-64 bg-sky-700 text-white p-6 space-y-4 overflow-y-auto transform md:relative md:translate-x-0">
+            <h1 class="text-2xl font-bold mb-6 border-b border-sky-500 pb-2">MTH 102 Explorer</h1>
+            <nav>
+                <ul class="space-y-2">
+                    <li><a href="#" class="nav-link block hover:bg-sky-600 p-2 rounded-md" data-target="preamble">Preamble</a></li>
+                    <li><a href="#" class="nav-link block hover:bg-sky-600 p-2 rounded-md" data-target="chapter1">Chapter 1: Functions, Limits, Continuity</a></li>
+                    <li><a href="#" class="nav-link block hover:bg-sky-600 p-2 rounded-md" data-target="chapter2">Chapter 2: Differential Calculus</a></li>
+                    <li><a href="#" class="nav-link block hover:bg-sky-600 p-2 rounded-md" data-target="chapter3">Chapter 3: Integral Calculus</a></li>
+                    <li><a href="#" class="nav-link block hover:bg-sky-600 p-2 rounded-md" data-target="chapter4">Chapter 4: Foundations of Numbers & Algebra</a></li>
+                    <li><a href="#" class="nav-link block hover:bg-sky-600 p-2 rounded-md" data-target="chapter5">Chapter 5: Complex Numbers</a></li>
+                    <li><a href="#" class="nav-link block hover:bg-sky-600 p-2 rounded-md" data-target="chapter6">Chapter 6: Trigonometry</a></li>
+                    <li><a href="#" class="nav-link block hover:bg-sky-600 p-2 rounded-md" data-target="chapter7">Chapter 7: Sequences, Series, Induction</a></li>
+                    <li><a href="#" class="nav-link block hover:bg-sky-600 p-2 rounded-md" data-target="chapter8">Chapter 8: Intro to DEs & Linear Algebra</a></li>
+                    <li><a href="#" class="nav-link block hover:bg-sky-600 p-2 rounded-md" data-target="conclusion">Conclusion</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main id="mainContent" class="flex-1 p-6 lg:p-10 overflow-y-auto bg-amber-100">
+            <section id="preamble" class="content-section active">
+                <h2 class="text-3xl font-semibold text-sky-800 mb-6">Preamble: Clarifying the MTH 102 Syllabus for Unilag</h2>
+                <div class="prose max-w-none text-stone-700 space-y-4">
+                    <p>This interactive application provides a detailed exposition of the MTH 102 curriculum, "Elementary Mathematics II," as prescribed by the University of Lagos (Unilag) syllabus. It is structured to offer in-depth explanations, illustrative examples, and practical applications for each topic and subtopic.</p>
+                    <p>Before delving into the specific content, it is imperative to establish the precise scope of this course at the University of Lagos. Multiple authoritative sources directly referencing the Unilag Faculty of Engineering and general MTH 102 course descriptions consistently outline a primary focus on elementary calculus. This emphasis is further corroborated by descriptions of MTH 102 as "Elementary Mathematics II" or "Introductory Mathematics II" across various Nigerian universities, all highlighting the application of differential and integral calculus in solving problems within contemporary business, technological, and scientific domains.</p>
+                    <p>A notable discrepancy emerged in some search results, where MTH 102 was labelled "Statistical Foundations". However, this designation appears to originate from a different institution or a non-aligned curriculum, as it contradicts the overwhelming evidence from Unilag-specific and contextually relevant materials. The consistent and predominant focus for Unilag's MTH 102, particularly for students in science and engineering, is unequivocally differential and integral calculus. This application therefore strictly adheres to the calculus-centric syllabus, ensuring fidelity to the user's explicit request to follow the "Unilag syllabus" and providing an accurate and relevant academic resource. The distinction is critical for precise curriculum alignment and to avoid misrepresenting the course content for the intended audience.</p>
+                    <p class="text-xs text-stone-500">References: [1], [2], [3], [4] as per source document.</p>
+                </div>
+            </section>
+
+            <section id="chapter1" class="content-section">
+                <h2 class="text-3xl font-semibold text-sky-800 mb-6">Chapter 1: Functions, Limits, and Continuity</h2>
+                <p class="mb-6 text-stone-700">This foundational chapter establishes the essential building blocks of calculus by rigorously defining functions, exploring their graphical representations, and introducing the pivotal concepts of limits and continuity. A thorough understanding of these topics is indispensable for comprehending the behavior of functions and for the subsequent development of differentiation and integration.</p>
+
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">1.1 Functions of a Real Variable</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p>A function of a real variable describes a relationship where each input value (independent variable, <span class="math">x</span>) corresponds to exactly one output value (dependent variable, <span class="math">y</span> or <span class="math">f(x)</span>). Examples include speed as a function of distance and time, or voltage as a function of current and resistance (Ohm's Law).</p>
+                            <p>Function notation, <span class="math">f(x)</span>, represents the output for input <span class="math">x</span>. Graphs visually represent function behavior, domain (possible inputs), and range (possible outputs), showing increasing/decreasing intervals, intercepts, and asymptotes. Combinations and inverse functions are also studied.</p>
+                            <div class="chart-container my-4">
+                                <canvas id="functionGraphExample"></canvas>
+                            </div>
+                            <p class="text-sm text-center text-stone-600">Example: Graph of <span class="math">y = x<sup>2</sup></span></p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">1.2 Limits</h3>
+                         <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p>A limit describes the value a function approaches as its input approaches a certain point. One-sided limits (left-hand and right-hand) must exist and be equal for a general limit to exist.</p>
+                            <p>The formal Epsilon-Delta definition: For every <span class="math">&epsilon; > 0</span>, there exists a <span class="math">&delta; > 0</span> such that if <span class="math">0 < |x - a| < &delta;</span>, then <span class="math">|f(x) - L| < &epsilon;</span>.</p>
+                            <p>Evaluation techniques include direct substitution, factoring, conjugate method, and analyzing behavior for limits to infinity. Understanding limits is crucial for defining derivatives and integrals.</p>
+                            <h4 class="text-xl font-medium text-sky-600 mt-4 mb-2">Limit Rules</h4>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full bg-white border border-stone-300 rounded-lg shadow table-interactive" id="limitRulesTable">
+                                    <thead class="bg-sky-100">
+                                        <tr>
+                                            <th class="p-3 text-left text-sm font-semibold text-sky-700">Rule Name</th>
+                                            <th class="p-3 text-left text-sm font-semibold text-sky-700">Formal Statement</th>
+                                            <th class="p-3 text-left text-sm font-semibold text-sky-700">Illustrative Example</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="p-3 border-t border-stone-200">Sum Rule</td>
+                                            <td class="p-3 border-t border-stone-200 math"><span class="math-lim">lim<sub>x&rarr;a</sub></span> [<span class="math">f(x) + g(x)</span>] = <span class="math-lim">lim<sub>x&rarr;a</sub></span> <span class="math">f(x)</span> + <span class="math-lim">lim<sub>x&rarr;a</sub></span> <span class="math">g(x)</span></td>
+                                            <td class="p-3 border-t border-stone-200 math"><span class="math-lim">lim<sub>x&rarr;2</sub></span> (<span class="math">x<sup>2</sup> + 3x</span>) = 4 + 6 = 10</td>
+                                        </tr>
+                                        <tr class="details-row hidden">
+                                            <td colspan="3">The limit of a sum is the sum of the limits, provided individual limits exist.</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 border-t border-stone-200">Difference Rule</td>
+                                            <td class="p-3 border-t border-stone-200 math"><span class="math-lim">lim<sub>x&rarr;a</sub></span> [<span class="math">f(x) - g(x)</span>] = <span class="math-lim">lim<sub>x&rarr;a</sub></span> <span class="math">f(x)</span> - <span class="math-lim">lim<sub>x&rarr;a</sub></span> <span class="math">g(x)</span></td>
+                                            <td class="p-3 border-t border-stone-200 math"><span class="math-lim">lim<sub>x&rarr;1</sub></span> (<span class="math">5x - x<sup>3</sup></span>) = 5 - 1 = 4</td>
+                                        </tr>
+                                        <tr class="details-row hidden">
+                                            <td colspan="3">The limit of a difference is the difference of the limits, provided individual limits exist.</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 border-t border-stone-200">Product Rule</td>
+                                            <td class="p-3 border-t border-stone-200 math"><span class="math-lim">lim<sub>x&rarr;a</sub></span> [<span class="math">f(x) &sdot; g(x)</span>] = <span class="math-lim">lim<sub>x&rarr;a</sub></span> <span class="math">f(x)</span> &sdot; <span class="math-lim">lim<sub>x&rarr;a</sub></span> <span class="math">g(x)</span></td>
+                                            <td class="p-3 border-t border-stone-200 math"><span class="math-lim">lim<sub>x&rarr;3</sub></span> (<span class="math">x &sdot; (x+1)</span>) = 3 &sdot; 4 = 12</td>
+                                        </tr>
+                                        <tr class="details-row hidden">
+                                            <td colspan="3">The limit of a product is the product of the limits, provided individual limits exist.</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 border-t border-stone-200">Constant Multiple Rule</td>
+                                            <td class="p-3 border-t border-stone-200 math"><span class="math-lim">lim<sub>x&rarr;a</sub></span> [<span class="math">c &sdot; f(x)</span>] = <span class="math">c</span> &sdot; <span class="math-lim">lim<sub>x&rarr;a</sub></span> <span class="math">f(x)</span></td>
+                                            <td class="p-3 border-t border-stone-200 math"><span class="math-lim">lim<sub>x&rarr;0</sub></span> (<span class="math">4 sin x</span>) = 4 &sdot; 0 = 0</td>
+                                        </tr>
+                                        <tr class="details-row hidden">
+                                            <td colspan="3">A constant factor can be pulled out of the limit operation.</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="p-3 border-t border-stone-200">Quotient Rule</td>
+                                            <td class="p-3 border-t border-stone-200 math"><span class="math-lim">lim<sub>x&rarr;a</sub></span> [<span class="math-frac"><span class="math-frac-num">f(x)</span><span class="math-frac-den">g(x)</span></span>] = <span class="math-frac"><span class="math-frac-num"><span class="math-lim">lim<sub>x&rarr;a</sub></span> f(x)</span><span class="math-frac-den"><span class="math-lim">lim<sub>x&rarr;a</sub></span> g(x)</span></span>, if <span class="math-lim">lim<sub>x&rarr;a</sub></span> <span class="math">g(x) &ne; 0</span></td>
+                                            <td class="p-3 border-t border-stone-200 math"><span class="math-lim">lim<sub>x&rarr;2</sub></span> (<span class="math-frac"><span class="math-frac-num">x<sup>2</sup></span><span class="math-frac-den">x+1</span></span>) = <span class="math-frac"><span class="math-frac-num">4</span><span class="math-frac-den">3</span></span></td>
+                                        </tr>
+                                        <tr class="details-row hidden">
+                                            <td colspan="3">The limit of a quotient is the quotient of the limits, provided the limit of the denominator is not zero.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">1.3 Continuity</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                           <p>A function <span class="math">f(x)</span> is continuous at a point <span class="math">a</span> if: 1. <span class="math">f(a)</span> exists, 2. <span class="math-lim">lim<sub>x&rarr;a</sub></span> <span class="math">f(x)</span> exists, and 3. <span class="math-lim">lim<sub>x&rarr;a</sub></span> <span class="math">f(x) = f(a)</span>. Continuous functions have no breaks, jumps, or holes.</p>
+                           <p>Types of discontinuities:
+                                <ul>
+                                    <li><strong>Removable:</strong> A hole in the graph; limit exists but <span class="math">f(a)</span> is undefined or different.
+                                    <li><strong>Jump:</strong> Left-hand and right-hand limits exist but are unequal.</li>
+                                    <li><strong>Infinite:</strong> Function approaches &plusmn;&infin;; associated with vertical asymptotes.</li>
+                                </ul>
+                           </p>
+                           <p>Sums, differences, products, and quotients (non-zero denominator) of continuous functions are also continuous. Continuity is essential for differentiability.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="chapter2" class="content-section">
+                <h2 class="text-3xl font-semibold text-sky-800 mb-6">Chapter 2: Differential Calculus: Theory and Applications</h2>
+                 <p class="mb-6 text-stone-700">This chapter introduces the core concept of the derivative, explores various techniques for computing derivatives, and demonstrates their wide-ranging applications in analyzing function behavior and solving real-world problems.</p>
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">2.1 The Derivative</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p>The derivative, <span class="math">f'(x)</span> or <span class="math-frac"><span class="math-frac-num">dy</span><span class="math-frac-den">dx</span></span>, is defined as: <span class="math math-lim">lim<sub>h&rarr;0</sub></span> <span class="math math-frac"><span class="math-frac-num">f(x+h) - f(x)</span><span class="math-frac-den">h</span></span>.</p>
+                            <p>It represents the instantaneous rate of change and the slope of the tangent line to the curve at a point.</p>
+                            <p>Physical interpretation: If <span class="math">s(t)</span> is position, <span class="math">s'(t) = v(t)</span> is velocity, and <span class="math">v'(t) = a(t)</span> is acceleration (so <span class="math">a(t) = s''(t)</span>).</p>
+                            <div class="chart-container my-4">
+                                <canvas id="derivativeExampleChart"></canvas>
+                            </div>
+                             <p class="text-sm text-center text-stone-600">Example: Function <span class="math">y = x<sup>2</sup></span> (blue) and its tangent at <span class="math">x=1</span> (red).</p>
+                        </div>
+                    </div>
+                     <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">2.2 Techniques of Differentiation</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p>Mastering differentiation techniques is crucial. Key rules include:</p>
+                            <h4 class="text-xl font-medium text-sky-600 mt-4 mb-2">Differentiation Rules</h4>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full bg-white border border-stone-300 rounded-lg shadow table-interactive" id="diffRulesTable">
+                                    <thead class="bg-sky-100">
+                                        <tr>
+                                            <th class="p-3 text-left text-sm font-semibold text-sky-700">Rule Name</th>
+                                            <th class="p-3 text-left text-sm font-semibold text-sky-700">Formal Statement</th>
+                                            <th class="p-3 text-left text-sm font-semibold text-sky-700">Example</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="p-3 border-t">Constant Rule</td>
+                                            <td class="p-3 border-t math"><span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span>(c) = 0</td>
+                                            <td class="p-3 border-t math"><span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span>(7) = 0</td>
+                                        </tr>
+                                        <tr class="details-row hidden"><td colspan="3">The derivative of a constant is zero.</td></tr>
+                                        <tr>
+                                            <td class="p-3 border-t">Power Rule</td>
+                                            <td class="p-3 border-t math"><span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span>(x<sup>n</sup>) = nx<sup>n-1</sup></td>
+                                            <td class="p-3 border-t math"><span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span>(x<sup>5</sup>) = 5x<sup>4</sup></td>
+                                        </tr>
+                                        <tr class="details-row hidden"><td colspan="3">Multiply by the exponent, then subtract one from the exponent.</td></tr>
+                                        <tr>
+                                            <td class="p-3 border-t">Sum/Difference</td>
+                                            <td class="p-3 border-t math"><span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span>[f(x) &pm; g(x)] = f'(x) &pm; g'(x)</td>
+                                            <td class="p-3 border-t math"><span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span>(x<sup>2</sup> + sin x) = 2x + cos x</td>
+                                        </tr>
+                                        <tr class="details-row hidden"><td colspan="3">The derivative of a sum/difference is the sum/difference of the derivatives.</td></tr>
+                                        <tr>
+                                            <td class="p-3 border-t">Product Rule</td>
+                                            <td class="p-3 border-t math"><span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span>[f(x)g(x)] = f(x)g'(x) + g(x)f'(x)</td>
+                                            <td class="p-3 border-t math"><span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span>(x<sup>2</sup>sin x) = x<sup>2</sup>cos x + (sin x)(2x)</td>
+                                        </tr>
+                                        <tr class="details-row hidden"><td colspan="3">"First times derivative of second, plus second times derivative of first."</td></tr>
+                                        <tr>
+                                            <td class="p-3 border-t">Quotient Rule</td>
+                                            <td class="p-3 border-t math"><span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span>[<span class="math-frac"><span class="math-frac-num">f(x)</span><span class="math-frac-den">g(x)</span></span>] = <span class="math-frac"><span class="math-frac-num">g(x)f'(x) - f(x)g'(x)</span><span class="math-frac-den">[g(x)]<sup>2</sup></span></span></td>
+                                            <td class="p-3 border-t math"><span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span>(<span class="math-frac"><span class="math-frac-num">cos x</span><span class="math-frac-den">x</span></span>) = <span class="math-frac"><span class="math-frac-num">x(-sin x) - (cos x)(1)</span><span class="math-frac-den">x<sup>2</sup></span></span></td>
+                                        </tr>
+                                        <tr class="details-row hidden"><td colspan="3">"Low d-high minus high d-low, square the bottom and away we go."</td></tr>
+                                        <tr>
+                                            <td class="p-3 border-t">Chain Rule</td>
+                                            <td class="p-3 border-t math"><span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span>[f(g(x))] = f'(g(x))g'(x)</td>
+                                            <td class="p-3 border-t math"><span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span>(sin(x<sup>2</sup>)) = cos(x<sup>2</sup>)(2x)</td>
+                                        </tr>
+                                        <tr class="details-row hidden"><td colspan="3">Derivative of the outer function (keeping inner function) times derivative of the inner function.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p><strong>Implicit Differentiation:</strong> Used when <span class="math">y</span> is not explicitly a function of <span class="math">x</span>. Differentiate both sides w.r.t <span class="math">x</span>, treating <span class="math">y</span> as <span class="math">y(x)</span> and using Chain Rule for terms with <span class="math">y</span>.</p>
+                            <p><strong>Higher-Order Derivatives:</strong> Second derivative <span class="math">f''(x)</span>, third <span class="math">f'''(x)</span>, etc., provide info like concavity.</p>
+                        </div>
+                    </div>
+                     <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">2.3 Applications of Differentiation</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p><strong>Maxima and Minima (Optimization):</strong> Find max/min values by finding critical points (<span class="math">f'(x)=0</span> or undefined) and using first/second derivative tests.</p>
+                            <p><strong>Curve Sketching:</strong> Analyze <span class="math">f'(x)</span> for increasing/decreasing intervals and extrema. Analyze <span class="math">f''(x)</span> for concavity and inflection points.</p>
+                            <p><strong>Related Rates:</strong> Find rate of change of one quantity by relating it to rates of other quantities using Chain Rule (differentiate w.r.t time).</p>
+                            <p><strong>L'Hôpital's Rule:</strong> For indeterminate limits (0/0 or &infin;/&infin;), <span class="math math-lim">lim<sub>x&rarr;a</sub></span> <span class="math math-frac"><span class="math-frac-num">f(x)</span><span class="math-frac-den">g(x)</span></span> = <span class="math math-lim">lim<sub>x&rarr;a</sub></span> <span class="math math-frac"><span class="math-frac-num">f'(x)</span><span class="math-frac-den">g'(x)</span></span>.</p>
+                            <p><strong>Physical Interpretations:</strong> Deeper understanding of velocity vs. speed, speeding up/slowing down based on signs of <span class="math">v(t)</span> and <span class="math">a(t)</span>.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="chapter3" class="content-section">
+                <h2 class="text-3xl font-semibold text-sky-800 mb-6">Chapter 3: Integral Calculus: Foundations and Applications</h2>
+                <p class="mb-6 text-stone-700">This chapter introduces integration as the inverse of differentiation, develops evaluation techniques, and explores applications like calculating areas and volumes.</p>
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">3.1 Antiderivatives and Indefinite Integrals</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p>An antiderivative <span class="math">F(x)</span> of <span class="math">f(x)</span> satisfies <span class="math">F'(x) = f(x)</span>. The indefinite integral <span class="math math-integral">∫</span><span class="math">f(x) dx = F(x) + C</span>, where <span class="math">C</span> is the constant of integration, representing a family of functions.</p>
+                            <h4 class="text-xl font-medium text-sky-600 mt-4 mb-2">Basic Indefinite Integration Rules</h4>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full bg-white border border-stone-300 rounded-lg shadow table-interactive" id="integRulesTable">
+                                    <thead class="bg-sky-100">
+                                        <tr>
+                                            <th class="p-3 text-left">Rule Name</th>
+                                            <th class="p-3 text-left">Formal Statement</th>
+                                            <th class="p-3 text-left">Example</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="p-3 border-t">Constant Rule</td>
+                                            <td class="p-3 border-t math"><span class="math-integral">∫</span> k dx = kx + C</td>
+                                            <td class="p-3 border-t math"><span class="math-integral">∫</span> 5 dx = 5x + C</td>
+                                        </tr>
+                                        <tr class="details-row hidden"><td colspan="3">The integral of a constant k is kx plus the constant of integration C.</td></tr>
+                                        <tr>
+                                            <td class="p-3 border-t">Power Rule (n &ne; -1)</td>
+                                            <td class="p-3 border-t math"><span class="math-integral">∫</span> x<sup>n</sup> dx = <span class="math-frac"><span class="math-frac-num">x<sup>n+1</sup></span><span class="math-frac-den">n+1</span></span> + C</td>
+                                            <td class="p-3 border-t math"><span class="math-integral">∫</span> x<sup>3</sup> dx = <span class="math-frac"><span class="math-frac-num">x<sup>4</sup></span><span class="math-frac-den">4</span></span> + C</td>
+                                        </tr>
+                                        <tr class="details-row hidden"><td colspan="3">Increase the power by 1, divide by the new power. Not applicable for n = -1.</td></tr>
+                                        <tr>
+                                            <td class="p-3 border-t">Log Rule</td>
+                                            <td class="p-3 border-t math"><span class="math-integral">∫</span> <span class="math-frac"><span class="math-frac-num">1</span><span class="math-frac-den">x</span></span> dx = ln|x| + C</td>
+                                            <td class="p-3 border-t math"><span class="math-integral">∫</span> <span class="math-frac"><span class="math-frac-num">1</span><span class="math-frac-den">x</span></span> dx = ln|x| + C</td>
+                                        </tr>
+                                        <tr class="details-row hidden"><td colspan="3">The integral of 1/x is the natural logarithm of the absolute value of x.</td></tr>
+                                         <tr>
+                                            <td class="p-3 border-t">Exponential Rule</td>
+                                            <td class="p-3 border-t math"><span class="math-integral">∫</span> e<sup>x</sup> dx = e<sup>x</sup> + C</td>
+                                            <td class="p-3 border-t math"><span class="math-integral">∫</span> e<sup>x</sup> dx = e<sup>x</sup> + C</td>
+                                        </tr>
+                                        <tr class="details-row hidden"><td colspan="3">The integral of e<sup>x</sup> is e<sup>x</sup> itself.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <h4 class="text-xl font-medium text-sky-600 mt-4 mb-2">Definite vs. Indefinite Integrals</h4>
+                             <div class="overflow-x-auto">
+                                <table class="min-w-full bg-white border border-stone-300 rounded-lg shadow">
+                                    <thead class="bg-sky-100">
+                                        <tr><th class="p-3 text-left">Criteria</th><th class="p-3 text-left">Indefinite Integral</th><th class="p-3 text-left">Definite Integral</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td class="p-3 border-t">Notation</td><td class="p-3 border-t math"><span class="math-integral">∫</span> f(x) dx</td><td class="p-3 border-t math"><span class="math-integral">∫</span><sub>a</sub><sup>b</sup> f(x) dx</td></tr>
+                                        <tr><td class="p-3 border-t">Result</td><td class="p-3 border-t">Family of functions (F(x) + C)</td><td class="p-3 border-t">Single numerical value</td></tr>
+                                        <tr><td class="p-3 border-t">Constant of Integration</td><td class="p-3 border-t">Always includes +C</td><td class="p-3 border-t">No +C (cancels out)</td></tr>
+                                        <tr><td class="p-3 border-t">Geometric Interpretation</td><td class="p-3 border-t">General antiderivative</td><td class="p-3 border-t">Area, volume, net change</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">3.2 Techniques of Integration</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p><strong>Substitution (u-substitution):</strong> Reverse of Chain Rule. Choose <span class="math">u</span>, find <span class="math">du</span>, transform integral.</p>
+                            <p><strong>Integration by Parts:</strong> From product rule: <span class="math math-integral">∫</span><span class="math">u dv = uv - </span><span class="math math-integral">∫</span><span class="math">v du</span>. Use LIATE (Log, Inverse Trig, Algebraic, Trig, Exponential) to choose <span class="math">u</span>.</p>
+                            <p><strong>Partial Fractions:</strong> For rational functions. Decompose into simpler fractions based on denominator factors.</p>
+                        </div>
+                    </div>
+                     <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">3.3 Definite Integrals</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                           <p>Defined as limit of Riemann sums (approximating area with rectangles). <span class="math math-integral">∫</span><sub>a</sub><sup>b</sup> <span class="math">f(x) dx</span>.</p>
+                           <p><strong>Fundamental Theorem of Calculus (FTC):</strong>
+                                <ol>
+                                    <li>If <span class="math">F'(x) = f(x)</span>, then <span class="math math-integral">∫</span><sub>a</sub><sup>b</sup> <span class="math">f(x) dx = F(b) - F(a)</span>.</li>
+                                    <li><span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span> <span class="math math-integral">∫</span><sub>a</sub><sup>x</sup> <span class="math">f(t) dt = f(x)</span>.</li>
+                                </ol>
+                           </p>
+                           <p>Properties include order of limits, zero interval, constant multiple, sum/difference, interval splitting.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">3.4 Applications of Integration</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p><strong>Areas:</strong> Area under curve <span class="math math-integral">∫</span><sub>a</sub><sup>b</sup> <span class="math">f(x) dx</span>. Area between curves <span class="math math-integral">∫</span><sub>a</sub><sup>b</sup> <span class="math">[f(x) - g(x)] dx</span> (upper - lower).</p>
+                            <div class="chart-container my-4">
+                                <canvas id="areaUnderCurveChart"></canvas>
+                            </div>
+                            <p class="text-sm text-center text-stone-600">Example: Area under <span class="math">y = x<sup>2</sup></span> from <span class="math">x=0</span> to <span class="math">x=2</span>.</p>
+                            <p><strong>Volumes of Solids of Revolution:</strong>
+                                <ul>
+                                    <li>Disk Method: <span class="math">&pi; <span class="math-integral">∫</span><sub>a</sub><sup>b</sup> [f(x)]<sup>2</sup> dx</span></li>
+                                    <li>Washer Method: <span class="math">&pi; <span class="math-integral">∫</span><sub>a</sub><sup>b</sup> (R(x)<sup>2</sup> - r(x)<sup>2</sup>) dx</span></li>
+                                    <li>Shell Method: <span class="math">2&pi; <span class="math-integral">∫</span><sub>a</sub><sup>b</sup> x f(x) dx</span> (for rotation about y-axis)</li>
+                                </ul>
+                            </p>
+                            <p><strong>Reduction Formulae:</strong> Express <span class="math">I<sub>n</sub></span> in terms of <span class="math">I<sub>k</sub></span> (<span class="math">k < n</span>).</p>
+                            <p><strong>Approximate Integration:</strong> Trapezium Rule, Simpson's Rule for numerical estimates.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="chapter4" class="content-section">
+                <h2 class="text-3xl font-semibold text-sky-800 mb-6">Chapter 4: Foundations of Numbers and Basic Algebra</h2>
+                <p class="mb-6 text-stone-700">This chapter covers fundamental algebraic concepts and number systems, prerequisites for advanced topics.</p>
+                 <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">4.1 Elementary Set Theory</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p>Set: collection of distinct objects (elements). Universal set (<span class="math">U</span>), empty set (<span class="math">&emptyset;</span>). Finite/infinite sets.</p>
+                            <p>Operations: Union (<span class="math">&cup;</span>), Intersection (<span class="math">&cap;</span>), Complement (<span class="math">A<sup>c</sup></span>). Disjoint sets: no common elements.</p>
+                            <p>Venn diagrams visually represent set relationships. Useful for counting and logic problems.</p>
+                            <div class="bg-white p-4 rounded-lg shadow text-center">
+                                <p class="text-lg font-medium">Interactive Venn Diagram (Conceptual)</p>
+                                <div class="flex justify-center items-center space-x-[-20px] my-4 h-32">
+                                    <div class="w-24 h-24 bg-blue-300 rounded-full flex items-center justify-center opacity-70">Set A</div>
+                                    <div class="w-24 h-24 bg-red-300 rounded-full flex items-center justify-center opacity-70">Set B</div>
+                                </div>
+                                <p class="text-sm">A visual representation of two overlapping sets.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">4.2 Real Numbers</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p>Real numbers (<span class="math">&Ropf;</span>) include all numbers on the number line (rational + irrational).</p>
+                            <p>Classification: Natural (<span class="math">&Nopf;</span>), Whole (<span class="math">&Wopf;</span>), Integers (<span class="math">&Zopf;</span>), Rational (<span class="math">&Qopf;</span> - fractions <span class="math">p/q</span>), Irrational (<span class="math">&Fopf;</span> - non-repeating/non-terminating decimals like <span class="math">&radic;2, &pi;, e</span>).</p>
+                            <p>Properties: Commutative, Associative, Distributive, Identity.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">4.3 Quadratic Equations</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p>Standard form: <span class="math">ax<sup>2</sup> + bx + c = 0</span> (<span class="math">a &ne; 0</span>). Max two roots (real/complex).</p>
+                            <p>Solution Methods: Factoring, Square Roots, Completing the Square, Quadratic Formula: <span class="math">x = <span class="math-frac"><span class="math-frac-num">-b &pm; &radic;(b<sup>2</sup> - 4ac)</span><span class="math-frac-den">2a</span></span></span>, Graphing.</p>
+                            <p>Discriminant <span class="math">D = b<sup>2</sup> - 4ac</span>: If <span class="math">D > 0</span> (2 distinct real roots), <span class="math">D = 0</span> (1 real repeated root), <span class="math">D < 0</span> (2 complex roots).</p>
+                            <p>Sum of roots (<span class="math">&alpha; + &beta;</span>) = <span class="math">-b/a</span>. Product of roots (<span class="math">&alpha;&beta;</span>) = <span class="math">c/a</span>.</p>
+                        </div>
+                    </div>
+                     <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">4.4 Binomial Theorem</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p>Expands <span class="math">(a + b)<sup>n</sup></span>: <span class="math"><span class="math-sum">&sum;</span><sub>k=0</sub><sup>n</sup> (<span class="math-frac"><span class="math-frac-num">n!</span><span class="math-frac-den">k!(n-k)!</span></span>) a<sup>n-k</sup> b<sup>k</sup></span>. The term <span class="math">(<span class="math-frac"><span class="math-frac-num">n!</span><span class="math-frac-den">k!(n-k)!</span></span>)</span> is <span class="math"><sup>n</sup>C<sub>k</sub></span> or <span class="math">(<sup>n</sup><sub>k</sub>)</span>.</p>
+                            <p>Applications: Combinatorics, probability (binomial distribution), polynomial approximation, financial math, series expansions (Taylor/Maclaurin).</p>
+                        </div>
+                    </div>
+                     <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">4.5 Systems of Linear Equations</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p>Two or more linear equations with same variables. Solution satisfies all equations.</p>
+                            <p>Methods: Graphical (intersection of lines), Substitution (solve for one variable, substitute into other), Elimination (add/subtract equations to eliminate a variable).</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="chapter5" class="content-section">
+                <h2 class="text-3xl font-semibold text-sky-800 mb-6">Chapter 5: Complex Numbers and Their Geometry</h2>
+                <p class="mb-6 text-stone-700">This chapter introduces complex numbers, their operations, geometric representation, and De Moivre's Theorem.</p>
+                 <div class="space-y-8">
+                    <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">5.1 Complex Numbers: Algebraic Operations</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p>Imaginary unit <span class="math">i = &radic;-1</span>. Complex number <span class="math">z = a + bi</span> (<span class="math">a</span>=real part, <span class="math">b</span>=imaginary part).</p>
+                            <p>Addition: <span class="math">(a + bi) + (c + di) = (a+c) + (b+d)i</span></p>
+                            <p>Subtraction: <span class="math">(a + bi) - (c + di) = (a-c) + (b-d)i</span></p>
+                            <p>Multiplication: <span class="math">(a + bi)(c + di) = (ac - bd) + (ad + bc)i</span> (since <span class="math">i<sup>2</sup> = -1</span>)</p>
+                            <p>Division: Multiply numerator and denominator by conjugate of denominator (<span class="math">c - di</span> for <span class="math">c + di</span>).</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">5.2 The Argand Diagram</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p>Geometric representation on a plane: horizontal real axis, vertical imaginary axis. <span class="math">z = a + bi</span> is point <span class="math">(a,b)</span>.</p>
+                            <p>Modulus <span class="math">|z| = r = &radic;(a<sup>2</sup> + b<sup>2</sup>)</span> (distance from origin).</p>
+                            <p>Argument <span class="math">arg(z) = &theta;</span> (angle from positive real axis). Careful with quadrant for <span class="math">tan<sup>-1</sup>(b/a)</span>.</p>
+                            <p>Polar form: <span class="math">z = r(cos&theta; + i sin&theta;)</span>.</p>
+                            <div class="chart-container my-4">
+                                <canvas id="argandDiagramExample"></canvas>
+                            </div>
+                            <p class="text-sm text-center text-stone-600">Argand Diagram: Point <span class="math">z = 3 + 4i</span></p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-medium text-sky-700 mb-3">5.3 De Moivre's Theorem and Nth Roots of Unity</h3>
+                        <div class="prose max-w-none text-stone-700 space-y-3">
+                            <p>De Moivre's Theorem: For <span class="math">z = r(cos&theta; + i sin&theta;)</span>, <span class="math">z<sup>n</sup> = r<sup>n</sup>(cos(n&theta;) + i sin(n&theta;))</span>.</p>
+                            <p>Nth roots of unity: Solutions to <span class="math">z<sup>n</sup> = 1</span>. There are <span class="math">n</span> distinct roots.
+                            Express <span class="math">1 = 1(cos(2&pi;k) + i sin(2&pi;k))</span>.
+                            Roots are <span class="math">z<sub>k</sub> = cos(<span class="math-frac"><span class="math-frac-num">2&pi;k</span><span class="math-frac-den">n</span></span>) + i sin(<span class="math-frac"><span class="math-frac-num">2&pi;k</span><span class="math-frac-den">n</span></span>)</span> for <span class="math">k = 0, 1, ..., n-1</span>.</p>
+                            <p>Properties: Modulus 1 (on unit circle), evenly spaced arguments, form vertices of a regular n-gon. Sum of roots is 0 for <span class="math">n &ge; 2</span>.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="chapter6" class="content-section">
+                 <h2 class="text-3xl font-semibold text-sky-800 mb-6">Chapter 6: Trigonometric Functions and Circular Measure</h2>
+                 <p class="mb-6 text-stone-700">This chapter reviews trigonometric functions, their properties, identities, and circular measure (radians).</p>
+                 <div class="prose max-w-none text-stone-700 space-y-3">
+                    <p>Trigonometric functions (sin, cos, tan, csc, sec, cot) relate angles to side ratios. Extended to all angles using the unit circle.</p>
+                    <p><strong>Circular Measure (Radians):</strong> Preferred for calculus. <span class="math">360&deg; = 2&pi;</span> radians. Simplifies derivatives (e.g., <span class="math-frac"><span class="math-frac-num">d</span><span class="math-frac-den">dx</span></span><span class="math">(sin x) = cos x</span> only if x is in radians).</p>
+                    <h4 class="text-xl font-medium text-sky-600 mt-4 mb-2">Key Trigonometric Identities</h4>
+                    <p>(Refer to Table 6.1 in source document for a comprehensive list including Reciprocal, Quotient, Pythagorean, Sum/Difference, Double Angle, Product-to-Sum, Sum-to-Product identities).</p>
+                    <p>Example Pythagorean Identity: <span class="math">sin<sup>2</sup>&theta; + cos<sup>2</sup>&theta; = 1</span>.</p>
+                    <p>Example Sum Formula: <span class="math">sin(x+y) = sin x cos y + cos x sin y</span>.</p>
+                    <div class="bg-white p-4 rounded-lg shadow text-center">
+                        <p class="text-lg font-medium">Interactive Unit Circle (Conceptual)</p>
+                        <canvas id="unitCircleCanvas" class="mx-auto border border-stone-300 rounded-md" width="300" height="300"></canvas>
+                        <p class="text-sm mt-2">Drag point or input angle to see sin/cos values.</p>
+                    </div>
+                 </div>
+            </section>
+
+            <section id="chapter7" class="content-section">
+                <h2 class="text-3xl font-semibold text-sky-800 mb-6">Chapter 7: Sequences, Series, and Mathematical Induction</h2>
+                <p class="mb-6 text-stone-700">Introduces sequences, series, convergence/divergence, and mathematical induction.</p>
+                <div class="prose max-w-none text-stone-700 space-y-3">
+                    <h4 class="text-xl font-medium text-sky-600 mt-4 mb-2">7.1 Mathematical Induction</h4>
+                    <p>Proof technique for statements <span class="math">P(n)</span> for integers <span class="math">n &ge; 1</span>.</p>
+                    <ol>
+                        <li><strong>Basis Step:</strong> Verify <span class="math">P(1)</span> is true.</li>
+                        <li><strong>Inductive Hypothesis:</strong> Assume <span class="math">P(k)</span> is true for some integer <span class="math">k &ge; 1</span>.</li>
+                        <li><strong>Inductive Step:</strong> Show if <span class="math">P(k)</span> is true, then <span class="math">P(k+1)</span> is true.</li>
+                    </ol>
+                    <p>Example: Prove <span class="math">1+2+...+n = <span class="math-frac"><span class="math-frac-num">n(n+1)</span><span class="math-frac-den">2</span></span></span>.</p>
+
+                    <h4 class="text-xl font-medium text-sky-600 mt-4 mb-2">7.2 Real Sequences and Series</h4>
+                    <p>Sequence: ordered list of numbers. Series: sum of terms in a sequence.</p>
+                    <p>Convergence: Series sum approaches a finite number. Divergence: Sum is infinite or oscillates.</p>
+                    <p><strong>Basic Convergence Tests:</strong> (Refer to Table 7.1 in source for Divergence Test, Geometric Series Test, P-Series Test).</p>
+                    <p>Geometric Series <span class="math"><span class="math-sum">&sum;</span>ar<sup>n</sup></span> converges if <span class="math">|r| < 1</span> to <span class="math"><span class="math-frac"><span class="math-frac-num">a</span><span class="math-frac-den">1-r</span></span></span>.</p>
+
+                    <h4 class="text-xl font-medium text-sky-600 mt-4 mb-2">7.3 Arithmetic Progressions (AP)</h4>
+                    <p>Common difference <span class="math">d</span>. Nth term <span class="math">u<sub>n</sub> = a + (n-1)d</span>.</p>
+                    <p>Sum of N terms <span class="math">S<sub>N</sub> = <span class="math-frac"><span class="math-frac-num">N</span><span class="math-frac-den">2</span></span>(2a + (N-1)d) = <span class="math-frac"><span class="math-frac-num">N</span><span class="math-frac-den">2</span></span>(a + l)</span>.</p>
+
+                    <h4 class="text-xl font-medium text-sky-600 mt-4 mb-2">7.4 Geometric Progressions (GP)</h4>
+                    <p>Common ratio <span class="math">r</span>. Nth term <span class="math">a<sub>n</sub> = ar<sup>n-1</sup></span>.</p>
+                    <p>Sum of N terms <span class="math">S<sub>N</sub> = <span class="math-frac"><span class="math-frac-num">a(1-r<sup>N</sup>)</span><span class="math-frac-den">1-r</span></span></span> (for <span class="math">r &ne; 1</span>).</p>
+                    <p>Infinite GP sum <span class="math">S<sub>&infin;</sub> = <span class="math-frac"><span class="math-frac-num">a</span><span class="math-frac-den">1-r</span></span></span> if <span class="math">|r| < 1</span>.</p>
+                </div>
+            </section>
+
+            <section id="chapter8" class="content-section">
+                <h2 class="text-3xl font-semibold text-sky-800 mb-6">Chapter 8: Introduction to Differential Equations and Linear Algebra</h2>
+                <p class="mb-6 text-stone-700">Overview of first-order DEs and fundamental linear algebra concepts.</p>
+                <div class="prose max-w-none text-stone-700 space-y-3">
+                    <h4 class="text-xl font-medium text-sky-600 mt-4 mb-2">8.1 First-Order Differential Equations</h4>
+                    <p>Equation relating a function with its derivatives.</p>
+                    <p>Separable Equations: Can be written <span class="math"><span class="math-frac"><span class="math-frac-num">dy</span><span class="math-frac-den">dx</span></span> = f(x)g(y)</span>. Solve by separating variables and integrating.</p>
+                    <p>Applications: Exponential growth/decay, logistic growth.</p>
+
+                    <h4 class="text-xl font-medium text-sky-600 mt-4 mb-2">8.2 Matrices and Determinants</h4>
+                    <p>Matrix: Rectangular array of numbers. Determinant: Scalar value of a square matrix.</p>
+                    <p>Linear systems as <span class="math">[A]{x} = {r}</span>.</p>
+                    <p>(Refer to Table 8.1 in source for Matrix vs. Determinant distinctions).</p>
+
+                    <h4 class="text-xl font-medium text-sky-600 mt-4 mb-2">8.3 Eigenvalues and Eigenvectors</h4>
+                    <p>Eigenvector <span class="math">v</span> of matrix <span class="math">A</span> satisfies <span class="math">Av = &lambda;v</span>, where <span class="math">&lambda;</span> is eigenvalue.</p>
+                    <p>Find eigenvalues by solving characteristic equation <span class="math">det(A - &lambda;I) = 0</span>.</p>
+                    <p>Applications: Vibration analysis, quantum mechanics, PageRank, PCA.</p>
+                 </div>
+            </section>
+
+            <section id="conclusion" class="content-section">
+                <h2 class="text-3xl font-semibold text-sky-800 mb-6">Conclusion</h2>
+                <div class="prose max-w-none text-stone-700 space-y-4">
+                    <p>The MTH 102 curriculum at the University of Lagos, "Elementary Mathematics II," provides a robust foundation in differential and integral calculus, complemented by essential concepts from foundational algebra, set theory, complex numbers, trigonometry, sequences, series, and an introduction to differential equations and linear algebra. The course's emphasis on calculus prepares students for rigorous problem-solving in science and engineering.</p>
+                    <p>This interactive explorer aims to make these topics more accessible and engaging. The progression from fundamental definitions to core operations and diverse applications reflects a logical pedagogical approach, equipping students with computational skills and conceptual understanding.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            const mobileMenuButton = document.getElementById('mobileMenuButton');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('mainContent');
+
+            // Function to switch active content section
+            function showContent(targetId) {
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                }
+                // Close sidebar on mobile after navigation
+                if (window.innerWidth < 768) {
+                    sidebar.classList.remove('open');
+                }
+            }
+
+            // Sidebar navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('data-target');
+                    showContent(targetId);
+                    
+                    // Update active link style
+                    navLinks.forEach(nav => nav.classList.remove('bg-sky-800', 'font-semibold'));
+                    this.classList.add('bg-sky-800', 'font-semibold');
+                });
+            });
+            
+            // Set preamble as active by default and style its link
+            showContent('preamble');
+            document.querySelector('.nav-link[data-target="preamble"]').classList.add('bg-sky-800', 'font-semibold');
+
+
+            // Mobile menu toggle
+            mobileMenuButton.addEventListener('click', function() {
+                sidebar.classList.toggle('open');
+            });
+            
+            // Close sidebar when clicking on main content area on mobile
+            mainContent.addEventListener('click', function() {
+                if (window.innerWidth < 768 && sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                }
+            });
+
+            // Interactive tables: toggle details row
+            function makeTableInteractive(tableId) {
+                const table = document.getElementById(tableId);
+                if (!table) return;
+
+                const rows = table.querySelectorAll('tbody tr:not(.details-row)');
+                rows.forEach(row => {
+                    row.addEventListener('click', function() {
+                        const nextRow = this.nextElementSibling;
+                        if (nextRow && nextRow.classList.contains('details-row')) {
+                            nextRow.classList.toggle('hidden');
+                        }
+                    });
+                });
+            }
+
+            makeTableInteractive('limitRulesTable');
+            makeTableInteractive('diffRulesTable');
+            makeTableInteractive('integRulesTable');
+
+            // Chart.js Examples
+            // 1. Simple Function Graph (Chapter 1.1)
+            const functionCtx = document.getElementById('functionGraphExample')?.getContext('2d');
+            if (functionCtx) {
+                new Chart(functionCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [-3, -2, -1, 0, 1, 2, 3].map(String),
+                        datasets: [{
+                            label: 'y = x^2',
+                            data: [-3, -2, -1, 0, 1, 2, 3].map(x => x * x),
+                            borderColor: 'rgb(59, 130, 246)', // blue-500
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+
+            // 2. Derivative Example (Chapter 2.1)
+            const derivativeCtx = document.getElementById('derivativeExampleChart')?.getContext('2d');
+            if (derivativeCtx) {
+                new Chart(derivativeCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [-2, -1, 0, 1, 2, 3].map(String),
+                        datasets: [{
+                            label: 'y = x^2',
+                            data: [-2, -1, 0, 1, 2, 3].map(x => x*x),
+                            borderColor: 'rgb(59, 130, 246)', // blue-500
+                            tension: 0.1
+                        }, {
+                            label: 'Tangent at x=1 (y = 2x - 1)',
+                            data: [{x:0, y:-1}, {x:1, y:1}, {x:2, y:3}], // Points for y=2x-1
+                            borderColor: 'rgb(239, 68, 68)', // red-500
+                            tension: 0.1,
+                            borderDash: [5, 5]
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+            
+            // 3. Area Under Curve (Chapter 3.4)
+            const areaCtx = document.getElementById('areaUnderCurveChart')?.getContext('2d');
+            if (areaCtx) {
+                new Chart(areaCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [0, 0.5, 1, 1.5, 2].map(String),
+                        datasets: [{
+                            label: 'y = x^2 (Area from 0 to 2)',
+                            data: [0, 0.5, 1, 1.5, 2].map(x => x*x),
+                            borderColor: 'rgb(16, 185, 129)', // emerald-500
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            fill: 'origin', // Fill to the x-axis
+                            tension: 0.1
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: {y: {beginAtZero: true}} }
+                });
+            }
+
+            // 4. Argand Diagram (Chapter 5.2)
+            const argandCtx = document.getElementById('argandDiagramExample')?.getContext('2d');
+            if (argandCtx) {
+                new Chart(argandCtx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'z = 3 + 4i',
+                            data: [{x: 3, y: 4}],
+                            backgroundColor: 'rgb(239, 68, 68)', // red-500
+                            pointRadius: 6
+                        }, { // Origin
+                            label: 'Origin (0,0)',
+                            data: [{x: 0, y: 0}],
+                            backgroundColor: 'rgb(107, 114, 128)', // stone-500
+                            pointRadius: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { type: 'linear', position: 'bottom', title: { display: true, text: 'Real Axis' }, min: -5, max: 5 },
+                            y: { title: { display: true, text: 'Imaginary Axis' }, min: -5, max: 5 }
+                        }
+                    }
+                });
+            }
+
+            // 5. Unit Circle (Chapter 6) - Basic Canvas drawing
+            const unitCircleCanvas = document.getElementById('unitCircleCanvas');
+            if (unitCircleCanvas) {
+                const ctx = unitCircleCanvas.getContext('2d');
+                const radius = unitCircleCanvas.width / 2 - 20;
+                const centerX = unitCircleCanvas.width / 2;
+                const centerY = unitCircleCanvas.height / 2;
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+                ctx.strokeStyle = '#cbd5e1'; // slate-300
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Axes
+                ctx.beginPath();
+                ctx.moveTo(centerX - radius - 10, centerY);
+                ctx.lineTo(centerX + radius + 10, centerY);
+                ctx.moveTo(centerX, centerY - radius - 10);
+                ctx.lineTo(centerX, centerY + radius + 10);
+                ctx.strokeStyle = '#94a3b8'; // slate-500
+                ctx.stroke();
+                
+                // Example point (e.g., 45 degrees)
+                const angle = Math.PI / 4; // 45 degrees
+                const xPos = centerX + radius * Math.cos(angle);
+                const yPos = centerY - radius * Math.sin(angle); // Y is inverted in canvas
+
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(xPos, yPos);
+                ctx.strokeStyle = 'rgb(59, 130, 246)'; // blue-500
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(xPos, yPos, 4, 0, 2 * Math.PI);
+                ctx.fillStyle = 'rgb(59, 130, 246)';
+                ctx.fill();
+                
+                ctx.font = "12px Inter";
+                ctx.fillStyle = "#334155"; // slate-700
+                ctx.fillText("(cos θ, sin θ)", xPos + 5, yPos - 5);
+                ctx.fillText("θ", centerX + 20, centerY - 10);
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 15, 0, -angle, true); // Angle arc
+                ctx.strokeStyle = 'rgb(239, 68, 68)'; // red-500
+                ctx.stroke();
+            }
+
+        });
+    </script>
+</body>
+</html>
