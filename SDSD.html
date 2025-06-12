@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHY 102 Electrostatics Quiz</title>
+    <!-- Tailwind CSS CDN for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for better readability */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to the top */
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .quiz-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            max-width: 800px;
+            width: 100%;
+        }
+        .question-block {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #e2e8f0; /* Light border */
+            border-radius: 8px;
+            background-color: #f8fafc; /* Slightly off-white for questions */
+        }
+        .question-text {
+            font-weight: 600; /* Semi-bold */
+            margin-bottom: 15px;
+            color: #2d3748; /* Darker text for questions */
+            font-size: 1.125rem; /* Larger font size */
+        }
+        .option-label {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+        }
+        .option-label:hover {
+            background-color: #eff6ff; /* Light blue on hover */
+        }
+        .option-label input[type="radio"] {
+            margin-right: 12px;
+            accent-color: #4a5568; /* Custom radio button color */
+            transform: scale(1.2); /* Slightly larger radio buttons */
+        }
+        .score-message, .error-message, .instruction-message {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 1.15rem; /* Larger message text */
+            font-weight: 600;
+            text-align: center;
+            display: none; /* Hidden by default or shown by JS */
+        }
+        .score-message {
+            background-color: #e6fffa; /* Light green background for success */
+            color: #2c5282; /* Darker blue text */
+            border: 2px solid #38b2ac; /* Green border */
+        }
+        .error-message {
+            background-color: #fee2e2; /* Light red background for error */
+            color: #dc2626; /* Red text */
+            border: 2px solid #ef4444; /* Red border */
+        }
+        .instruction-message {
+            background-color: #fffbeb; /* Light yellow for instructions */
+            color: #92400e; /* Darker yellow text */
+            border: 2px solid #fbbf24; /* Yellow border */
+            display: block; /* Shown by default */
+            margin-bottom: 20px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* Space between buttons */
+            margin-top: 30px;
+        }
+        .submit-button, .reset-button {
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .submit-button {
+            background-color: #4a5568; /* Darker gray */
+            color: white;
+            border: none;
+        }
+        .submit-button:hover {
+            background-color: #2d3748; /* Even darker gray */
+            transform: translateY(-2px);
+        }
+        .reset-button {
+            background-color: #cbd5e0; /* Lighter gray */
+            color: #2d3748;
+            border: none;
+        }
+        .reset-button:hover {
+            background-color: #a0aec0; /* Medium gray */
+            transform: translateY(-2px);
+        }
+        .email-input-group {
+            margin-top: 25px;
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+        .email-input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .email-input-group input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        .email-input-group input[type="email"]:focus {
+            outline: none;
+            border-color: #4a5568;
+            box-shadow: 0 0 0 2px rgba(74, 85, 104, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">PHY 102 Electrostatics Quiz</h1>
+
+      
+
+        <!-- IMPORTANT: Replace YOUR_FORMSPREE_ENDPOINT_HERE with your actual Formspree endpoint -->
+        <form id="quizForm" action="https://formspree.io/f/mkgbrrdk" method="POST">
+            <!-- Question 1 -->
+            <div class="question-block">
+                <p class="question-text">1. What is electrostatics primarily defined as?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q1" value="A"> A. The study of moving charges.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q1" value="B"> B. The study of charges at rest.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q1" value="C"> C. The study of magnetic fields.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q1" value="D"> D. The study of electric currents.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 2 -->
+            <div class="question-block">
+                <p class="question-text">2. Which atomic particle carries a negative charge?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q2" value="A"> A. Proton
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q2" value="B"> B. Neutron
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q2" value="C"> C. Electron
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q2" value="D"> D. Nucleus
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="question-block">
+                <p class="question-text">3. How is a body charged negatively?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q3" value="A"> A. By removing protons.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q3" value="B"> B. By adding neutrons.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q3" value="C"> C. By removing electrons.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q3" value="D"> D. By adding electrons.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="question-block">
+                <p class="question-text">4. What happens when two bodies with like charges are brought close?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q4" value="A"> A. They attract each other.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q4" value="B"> B. They suffer mutual repulsion.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q4" value="C"> C. Nothing happens.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q4" value="D"> D. They become neutral.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="question-block">
+                <p class="question-text">5. Which of the following is characteristic of a conductor?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q5" value="A"> A. High electrical resistivity.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q5" value="B"> B. No free electrons in outermost shells.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q5" value="C"> C. Free electrons in outermost shells.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q5" value="D"> D. Electrons are only displaced when an electric field is applied.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 6 -->
+            <div class="question-block">
+                <p class="question-text">6. The process where a neutral body's electrons are attracted towards an incoming positively charged body, leaving the other side with excess positive charge, is called:</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q6" value="A"> A. Conduction
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q6" value="B"> B. Induction
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q6" value="C"> C. Polarization
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q6" value="D"> D. Triboelectricity
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 7 -->
+            <div class="question-block">
+                <p class="question-text">7. In charging by induction, if sphere A is negatively charged, what kind of charge will sphere B acquire upon separation after earthing?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q7" value="A"> A. Negative charge
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q7" value="B"> B. No charge
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q7" value="C"> C. Positive charge
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q7" value="D"> D. Both positive and negative charges
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 8 -->
+            <div class="question-block">
+                <p class="question-text">8. According to Coulomb's Law, if the distance between two charges is halved, the electrostatic force between them is:</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q8" value="A"> A. Halved
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q8" value="B"> B. Doubled
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q8" value="C"> C. Quadrupled
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q8" value="D"> D. Quartered
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 9 -->
+            <div class="question-block">
+                <p class="question-text">9. What is the unit of electric field?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q9" value="A"> A. Joules (J)
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q9" value="B"> B. Coulombs (C)
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q9" value="C"> C. Volts (V)
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q9" value="D"> D. Newtons per Coulomb (N/C)
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 10 -->
+            <div class="question-block">
+                <p class="question-text">10. Where is the neutral point located between two like charges?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q10" value="A"> A. Outside the charges, closer to the smaller charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q10" value="B"> B. Somewhere between the two charges.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q10" value="C"> C. At infinity.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q10" value="D"> D. At the exact midpoint between the charges, regardless of magnitude.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 11 -->
+            <div class="question-block">
+                <p class="question-text">11. What is the value of the constant of proportionality 'k' in Coulomb's Law in a vacuum?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q11" value="A"> A. $8.854 \times 10^{-12}$ F/m
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q11" value="B"> B. $9 \times 10^9$ m/F
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q11" value="C"> C. $1.6 \times 10^{-19}$ C
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q11" value="D"> D. $6.022 \times 10^{23}$ mol$^{-1}$
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 12 -->
+            <div class="question-block">
+                <p class="question-text">12. What does a negative electrostatic force indicate between two charges?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q12" value="A"> A. Repulsion
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q12" value="B"> B. Attraction
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q12" value="C"> C. Zero force
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q12" value="D"> D. Neutralization
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 13 -->
+            <div class="question-block">
+                <p class="question-text">13. If the distance between two charges is tripled, how does the electrostatic force change?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q13" value="A"> A. It is tripled.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q13" value="B"> B. It is reduced to one-third.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q13" value="C"> C. It is quadrupled.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q13" value="D"> D. It is reduced to one-ninth.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 14 -->
+            <div class="question-block">
+                <p class="question-text">14. What is the purpose of a 'test charge' in defining an electric field?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q14" value="A"> A. To increase the field strength.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q14" value="B"> B. To distort the field being measured as much as possible.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q14" value="C"> C. To measure the force without significantly distorting the field.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q14" value="D"> D. To create a new electric field.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 15 -->
+            <div class="question-block">
+                <p class="question-text">15. What direction do electric field lines point for a positive charge?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q15" value="A"> A. Inwards towards it.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q15" value="B"> B. Tangential to it.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q15" value="C"> C. Away from it (radially outwards).
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q15" value="D"> D. Parallel to the surface.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 16 -->
+            <div class="question-block">
+                <p class="question-text">16. If a negative charge is placed in an electric field, in what direction will the electric force on it be?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q16" value="A"> A. In the direction of the electric field.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q16" value="B"> B. Perpendicular to the electric field.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q16" value="C"> C. Opposite to the direction of the electric field.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q16" value="D"> D. Zero, if the field is uniform.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 17 -->
+            <div class="question-block">
+                <p class="question-text">17. Why do electric field lines not cross each other?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q17" value="A"> A. Because charges move in straight lines.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q17" value="B"> B. Because it would mean a charge could move in two directions simultaneously.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q17" value="C"> C. Because they always point away from positive charges.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q17" value="D"> D. Because electric fields are always uniform.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 18 -->
+            <div class="question-block">
+                <p class="question-text">18. What defines a uniform electric field?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q18" value="A"> A. Field lines are curved and evenly spaced.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q18" value="B"> B. Field lines are straight, parallel, and unevenly spaced.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q18" value="C"> C. Field lines are straight, parallel, and evenly spaced.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q18" value="D"> D. The field changes direction constantly but has constant magnitude.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 19 -->
+            <div class="question-block">
+                <p class="question-text">19. What is electric flux defined as?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q19" value="A"> A. The total charge enclosed by a surface.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q19" value="B"> B. The number of field lines crossing the surface normally.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q19" value="C"> C. The work done per unit charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q19" value="D"> D. The potential difference between two points.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 20 -->
+            <div class="question-block">
+                <p class="question-text">20. When does an electric field parallel to a surface contribute to the electric flux through that surface?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q20" value="A"> A. Always.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q20" value="B"> B. When the surface area is very large.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q20" value="C"> C. Only if the field is uniform.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q20" value="D"> D. Never, it contributes no electric flux.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 21 -->
+            <div class="question-block">
+                <p class="question-text">21. What is the unit of electric flux?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q21" value="A"> A. Farad (F)
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q21" value="B"> B. Joule (J)
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q21" value="C"> C. Volt-metre (V·m)
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q21" value="D"> D. Coulomb (C)
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 22 -->
+            <div class="question-block">
+                <p class="question-text">22. What does Gauss's Law state about the electric flux out of any closed surface?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q22" value="A"> A. It is inversely proportional to the net charge enclosed.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q22" value="B"> B. It is equal to the electric field strength.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q22" value="C"> C. It is proportional to the net charge it encloses.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q22" value="D"> D. It is always zero.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 23 -->
+            <div class="question-block">
+                <p class="question-text">23. If a closed surface does not enclose any particular charge, what is the contribution of that charge to the electric flux out of the surface?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q23" value="A"> A. Positive flux.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q23" value="B"> B. Negative flux.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q23" value="C"> C. Zero flux.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q23" value="D"> D. It depends on the distance from the surface.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 24 -->
+            <div class="question-block">
+                <p class="question-text">24. What is the characteristic of a conservative field like the electrostatic field?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q24" value="A"> A. The work done depends on the path taken.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q24" value="B"> B. Mechanical energy is not conserved.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q24" value="C"> C. The work done in a cycle is zero.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q24" value="D"> D. It produces non-uniform fields only.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 25 -->
+            <div class="question-block">
+                <p class="question-text">25. What is an equipotential surface?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q25" value="A"> A. A surface where electric field lines are parallel to it.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q25" value="B"> B. A surface where the work done in moving a charge along it is zero.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q25" value="C"> C. A surface with a constant electric field strength.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q25" value="D"> D. A surface that encloses no charge.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 26 -->
+            <div class="question-block">
+                <p class="question-text">26. What does positive work done by us on a charge in an electrostatic field imply in terms of potential energy?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q26" value="A"> A. A loss in potential energy.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q26" value="B"> B. No change in potential energy.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q26" value="C"> C. A gain in kinetic energy.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q26" value="D"> D. A gain in potential energy.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 27 -->
+            <div class="question-block">
+                <p class="question-text">27. How is electric potential due to a given charge at a point defined?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q27" value="A"> A. Force per unit charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q27" value="B"> B. Work done in moving a point charge from infinity up to that point.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q27" value="C"> C. Electric field multiplied by area.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q27" value="D"> D. Product of two charges.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 28 -->
+            <div class="question-block">
+                <p class="question-text">28. What is the unit of electrostatic potential?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q28" value="A"> A. Newton (N)
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q28" value="B"> B. Coulomb (C)
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q28" value="C"> C. Volt (V)
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q28" value="D"> D. Farad (F)
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 29 -->
+            <div class="question-block">
+                <p class="question-text">29. For a positive charge, how does electrostatic potential change as you move away from it?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q29" value="A"> A. It increases.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q29" value="B"> B. It remains constant.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q29" value="C"> C. It becomes smaller (decreases).
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q29" value="D"> D. It becomes negative.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 30 -->
+            <div class="question-block">
+                <p class="question-text">30. Where are the charges distributed on a charged solid spherical conductor at electrostatic equilibrium?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q30" value="A"> A. Evenly distributed throughout the volume.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q30" value="B"> B. Concentrated at the center.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q30" value="C"> C. Evenly distributed on the surface.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q30" value="D"> D. Clustered at sharp edges.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 31 -->
+            <div class="question-block">
+                <p class="question-text">31. What is the behavior of electric field lines with respect to the surface of conductors?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q31" value="A"> A. They are parallel to the surface.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q31" value="B"> B. They are tangential to the surface.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q31" value="C"> C. They are perpendicular to the surface.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q31" value="D"> D. They are randomly oriented.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 32 -->
+            <div class="question-block">
+                <p class="question-text">32. In the case of two parallel oppositely charged sheets, what is the nature of the electric field between them?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q32" value="A"> A. Non-uniform and radial.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q32" value="B"> B. Uniform and constant.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q32" value="C"> C. Zero.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q32" value="D"> D. Decreases with distance.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 33 -->
+            <div class="question-block">
+                <p class="question-text">33. If a charge is launched at a right angle to a uniform electric field, what kind of path does it follow?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q33" value="A"> A. A straight line.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q33" value="B"> B. A circle.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q33" value="C"> C. A parabola.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q33" value="D"> D. An ellipse.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 34 -->
+            <div class="question-block">
+                <p class="question-text">34. When a positive charge is accelerated by an electric field, what happens to its kinetic energy?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q34" value="A"> A. It decreases.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q34" value="B"> B. It remains constant.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q34" value="C"> C. It increases.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q34" value="D"> D. It converts into potential energy.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 35 -->
+            <div class="question-block">
+                <p class="question-text">35. What is the charge on a neutron?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q35" value="A"> A. Positive
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q35" value="B"> B. Negative
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q35" value="C"> C. Neutral (no charge)
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q35" value="D"> D. Variable
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 36 -->
+            <div class="question-block">
+                <p class="question-text">36. Why is it easier to remove and add electrons to an atom than protons?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q36" value="A"> A. Electrons are larger than protons.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q36" value="B"> B. Electrons are not in the nucleus.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q36" value="C"> C. Protons are neutral.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q36" value="D"> D. Electrons have a positive charge.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 37 -->
+            <div class="question-block">
+                <p class="question-text">37. Which of the following is an example of a conductor?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q37" value="A"> A. Glass
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q37" value="B"> B. Rubber
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q37" value="C"> C. All metals
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q37" value="D"> D. Dry wood
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 38 -->
+            <div class="question-block">
+                <p class="question-text">38. What happens to electrons in an insulator when an electric field is applied?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q38" value="A"> A. They move freely, allowing current to flow.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q38" value="B"> B. They are displaced, and the material becomes polarized.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q38" value="C"> C. They are removed from the atom.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q38" value="D"> D. They are added to the atom.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 39 -->
+            <div class="question-block">
+                <p class="question-text">39. What is an example of an insulator breaking down due to a large electric field?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q39" value="A"> A. A wire getting hot.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q39" value="B"> B. A magnet attracting metal.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q39" value="C"> C. Producing lightning and thunder.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q39" value="D"> D. A battery powering a circuit.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 40 -->
+            <div class="question-block">
+                <p class="question-text">40. How do semiconductors conduct electricity when temperature increases from zero Kelvin?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q40" value="A"> A. They become perfect insulators.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q40" value="B"> B. They conduct little electricity.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q40" value="C"> C. They become superconductors.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q40" value="D"> D. Their conductivity decreases significantly.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 41 -->
+            <div class="question-block">
+                <p class="question-text">41. What is triboelectricity?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q41" value="A"> A. Charging by induction.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q41" value="B"> B. Charging by contact.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q41" value="C"> C. Charging by friction or rubbing.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q41" value="D"> D. Charging by placing a body in an electric field.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 42 -->
+            <div class="question-block">
+                <p class="question-text">42. In the triboelectric series, what characterizes materials that are higher on the table?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q42" value="A"> A. They gain electrons from the other material.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q42" value="B"> B. They lose electrons to the other material.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q42" value="C"> C. They become negatively charged.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q42" value="D"> D. They have no charge affinity.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 43 -->
+            <div class="question-block">
+                <p class="question-text">43. If glass is rubbed with wool, what happens to the glass?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q43" value="A"> A. It gains electrons and becomes negatively charged.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q43" value="B"> B. It loses electrons and becomes positively charged.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q43" value="C"> C. It remains neutral.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q43" value="D"> D. It gains protons and becomes positively charged.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 44 -->
+            <div class="question-block">
+                <p class="question-text">44. According to Newton's Third Law, how do the forces on $Q_1$ and $Q_2$ in Coulomb's Law relate?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q44" value="A"> A. They are unequal in magnitude but opposite in direction.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q44" value="B"> B. They are equal in magnitude and in the same direction.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q44" value="C"> C. They are equal in magnitude and opposite in direction.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q44" value="D"> D. There is only a force on one charge.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 45 -->
+            <div class="question-block">
+                <p class="question-text">45. What is the permittivity of free space, $\epsilon_0$?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q45" value="A"> A. $9 \times 10^9$ F/m
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q45" value="B"> B. $8.854 \times 10^{-12}$ F/m
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q45" value="C"> C. $1.6 \times 10^{-19}$ C
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q45" value="D"> D. $1.0$ (dimensionless)
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 46 -->
+            <div class="question-block">
+                <p class="question-text">46. If the distance between two charges is doubled, and the magnitude of one of them is tripled, how does the new force compare to the old force?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q46" value="A"> A. $F_2 = \frac{1}{4} F_1$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q46" value="B"> B. $F_2 = 3 F_1$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q46" value="C"> C. $F_2 = \frac{3}{4} F_1$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q46" value="D"> D. $F_2 = \frac{3}{2} F_1$
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 47 -->
+            <div class="question-block">
+                <p class="question-text">47. Qualitatively, what is the electric field of a charge?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q47" value="A"> A. The charge itself.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q47" value="B"> B. The force it experiences.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q47" value="C"> C. The region around it where its effect is felt.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q47" value="D"> D. The potential energy stored.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 48 -->
+            <div class="question-block">
+                <p class="question-text">48. What is the quantitative definition of electrostatic field at a point?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q48" value="A"> A. The product of force and charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q48" value="B"> B. The electrostatic force experienced per unit charge placed at the point.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q48" value="C"> C. The charge divided by the distance squared.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q48" value="D"> D. The work done to move a charge.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 49 -->
+            <div class="question-block">
+                <p class="question-text">49. What is a "point charge"?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q49" value="A"> A. A charge with a very large volume.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q49" value="B"> B. A charge concentrated at a single point in space.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q49" value="C"> C. A charge that does not create an electric field.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q49" value="D"> D. A charge that moves in a circular path.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 50 -->
+            <div class="question-block">
+                <p class="question-text">50. If the electric field of a point charge is positive, what does this imply about the charge?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q50" value="A"> A. The charge is negative.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q50" value="B"> B. The charge is positive.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q50" value="C"> C. The charge is neutral.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q50" value="D"> D. The charge is moving.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 51 -->
+            <div class="question-block">
+                <p class="question-text">51. What is the main difference between charging by contact and charging by induction?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q51" value="A"> A. Charging by contact results in an unlike charge, while induction results in a like charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q51" value="B"> B. Charging by contact requires earthing, while induction does not.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q51" value="C"> C. Charging by contact results in a like charge, while induction results in an unlike charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q51" value="D"> D. Charging by induction involves rubbing, while contact does not.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 52 -->
+            <div class="question-block">
+                <p class="question-text">52. Which material is typically higher on the triboelectric series: Rabbit's fur or Amber?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q52" value="A"> A. Amber
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q52" value="B"> B. Rabbit's fur
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q52" value="C"> C. They are at the same level.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q52" value="D"> D. Cannot be determined from the provided list.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 53 -->
+            <div class="question-block">
+                <p class="question-text">53. What is the fundamental principle of Coulomb's Law regarding interaction between charges?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q53" value="A"> A. Like charges attract, unlike charges repel.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q53" value="B"> B. Like charges repel, unlike charges attract.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q53" value="C"> C. All charges attract each other.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q53" value="D"> D. All charges repel each other.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 54 -->
+            <div class="question-block">
+                <p class="question-text">54. If an electric field is not uniform because its magnitude is not constant, what does this mean about the field lines?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q54" value="A"> A. They are curved.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q54" value="B"> B. They are evenly spaced.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q54" value="C"> C. They are not evenly spaced.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q54" value="D"> D. They are parallel.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 55 -->
+            <div class="question-block">
+                <p class="question-text">55. What is the relationship between electric field (E) and electric flux ($\Phi$) and normal area (A) as expressed in equation 2.14?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q55" value="A"> A. $\Phi = E/A$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q55" value="B"> B. $E = \Phi A$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q55" value="C"> C. $E = \Phi/A$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q55" value="D"> D. $\Phi = E + A$
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 56 -->
+            <div class="question-block">
+                <p class="question-text">56. According to the text, what is another term for electric field intensity or electric field strength?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q56" value="A"> A. Electric Potential
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q56" value="B"> B. Electric Flux
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q56" value="C"> C. Electric Current
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q56" value="D"> D. Electric Field
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 57 -->
+            <div class="question-block">
+                <p class="question-text">57. If the net charge enclosed by a surface is negative, what does this imply about the electric flux?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q57" value="A"> A. The electric flux points out of the surface.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q57" value="B"> B. The electric flux points into the surface.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q57" value="C"> C. The electric flux is zero.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q57" value="D"> D. The electric flux is infinite.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 58 -->
+            <div class="question-block">
+                <p class="question-text">58. The work done in moving a charge from point A to point B in an electrostatic field depends only on:</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q58" value="A"> A. The path taken.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q58" value="B"> B. The velocity of the charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q58" value="C"> C. The initial and final points.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q58" value="D"> D. The mass of the charge.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 59 -->
+            <div class="question-block">
+                <p class="question-text">59. If the work done in a cycle in an electrostatic field is zero, what kind of field is it?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q59" value="A"> A. A non-conservative field.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q59" value="B"> B. A dissipative field.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q59" value="C"> C. A conservative field.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q59" value="D"> D. A magnetic field.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 60 -->
+            <div class="question-block">
+                <p class="question-text">60. What is the consequence of electric field lines being perpendicular to the surface of conductors?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q60" value="A"> A. Charges move along the surface.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q60" value="B"> B. There is a component of electric field parallel to the surface.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q60" value="C"> C. The charges on the surface are not in equilibrium.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q60" value="D"> D. There is no component of the electric field parallel to the surface.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 61 -->
+            <div class="question-block">
+                <p class="question-text">61. What is the fundamental nature of an atom?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q61" value="A"> A. It is always negatively charged.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q61" value="B"> B. It has a massive nucleus with protons and neutrons.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q61" value="C"> C. It consists only of electrons.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q61" value="D"> D. It has a net positive charge.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 62 -->
+            <div class="question-block">
+                <p class="question-text">62. In a neutral atom, the number of electrons is equal to the number of:</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q62" value="A"> A. Neutrons
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q62" value="B"> B. Protons
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q62" value="C"> C. Nuclei
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q62" value="D"> D. Ions
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 63 -->
+            <div class="question-block">
+                <p class="question-text">63. To charge a body positive, what action must be taken?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q63" value="A"> A. Add electrons.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q63" value="B"> B. Remove electrons.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q63" value="C"> C. Add protons.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q63" value="D"> D. Remove neutrons.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 64 -->
+            <div class="question-block">
+                <p class="question-text">64. What is the primary reason metals are good conductors of heat?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q64" value="A"> A. Their atoms are tightly packed.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q64" value="B"> B. They have low electric conductivity.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q64" value="C"> C. Free electrons get heated and move towards cooler parts.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q64" value="D"> D. They are good insulators.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 65 -->
+            <div class="question-block">
+                <p class="question-text">65. When a positively charged body is brought near a neutral body, what happens to the electrons in the neutral body?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q65" value="A"> A. They are repelled away.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q65" value="B"> B. They are attracted towards the charged body.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q65" value="C"> C. They become neutral.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q65" value="D"> D. They remain static.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 66 -->
+            <div class="question-block">
+                <p class="question-text">66. Why is attraction not definitive proof that two bodies are both charged?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q66" value="A"> A. Because attraction only happens between like charges.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q66" value="B"> B. Because one body could be charged and the other neutral (polarized).
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q66" value="C"> C. Because only repulsion proves charging.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q66" value="D"> D. Because attraction always leads to neutralization.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 67 -->
+            <div class="question-block">
+                <p class="question-text">67. What is the process depicted in Figure 1.1 (Charging by contact)?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q67" value="A"> A. Two spheres become oppositely charged.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q67" value="B"> B. Charge is redistributed when a charged sphere touches an uncharged one.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q67" value="C"> C. An uncharged sphere is earthed.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q67" value="D"> D. Electrons flow from one sphere to the earth.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 68 -->
+            <div class="question-block">
+                <p class="question-text">68. In charging by contact, what kind of charge does the uncharged sphere acquire compared to the charged sphere?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q68" value="A"> A. An unlike charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q68" value="B"> B. The same charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q68" value="C"> C. No charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q68" value="D"> D. A neutral charge.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 69 -->
+            <div class="question-block">
+                <p class="question-text">69. What is the name of the process when electrons are lost by one body and gained by another due to rubbing?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q69" value="A"> A. Conduction
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q69" value="B"> B. Induction
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q69" value="C"> C. Friction or rubbing
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q69" value="D"> D. Polarization
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 70 -->
+            <div class="question-block">
+                <p class="question-text">70. Which of the following materials is listed higher than Silk in the triboelectric series according to the document?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q70" value="A"> A. Ebonite
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q70" value="B"> B. Rubber
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q70" value="C"> C. Cotton
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q70" value="D"> D. Cat's fur
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 71 -->
+            <div class="question-block">
+                <p class="question-text">71. What does it mean for a material to have a greater affinity for electrons in the context of triboelectricity?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q71" value="A"> A. It tends to lose electrons and become positively charged.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q71" value="B"> B. It tends to gain electrons and become negatively charged.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q71" value="C"> C. It remains neutral when rubbed.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q71" value="D"> D. It becomes an insulator.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 72 -->
+            <div class="question-block">
+                <p class="question-text">72. Coulomb's Law states that electrostatic force is inversely proportional to:</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q72" value="A"> A. The distance between charges.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q72" value="B"> B. The product of the charges.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q72" value="C"> C. The square of the distance between charges.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q72" value="D"> D. The sum of the charges.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 73 -->
+            <div class="question-block">
+                <p class="question-text">73. If two forces act on a body, how must they be added?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q73" value="A"> A. Scalarially.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q73" value="B"> B. Algebraically.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q73" value="C"> C. Vectorially.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q73" value="D"> D. They cannot be added.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 74 -->
+            <div class="question-block">
+                <p class="question-text">74. What is the approximate value of $\frac{1}{4\pi\epsilon_0}$?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q74" value="A"> A. $1 \times 10^9$ m/F
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q74" value="B"> B. $9 \times 10^9$ m/F
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q74" value="C"> C. $8.854 \times 10^{-12}$ m/F
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q74" value="D"> D. $1.6 \times 10^{-19}$ m/F
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 75 -->
+            <div class="question-block">
+                <p class="question-text">75. The electric field of like charges that repel each other has a point where the net field is zero. This point is called the:</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q75" value="A"> A. Equipotential point.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q75" value="B"> B. Critical point.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q75" value="C"> C. Neutral point.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q75" value="D"> D. Point of maximum field strength.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 76 -->
+            <div class="question-block">
+                <p class="question-text">76. What is an electric field line?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q76" value="A"> A. A line parallel to the electric field vector at every point.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q76" value="B"> B. An imaginary line in space tangent at every point to the electric field vector.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q76" value="C"> C. A path a negative charge takes.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q76" value="D"> D. A boundary of the electric field.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 77 -->
+            <div class="question-block">
+                <p class="question-text">77. What happens to a positive charge when it moves in the direction of the electric field?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q77" value="A"> A. It slows down.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q77" value="B"> B. It accelerates.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q77" value="C"> C. It experiences no force.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q77" value="D"> D. It moves perpendicular to the field.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 78 -->
+            <div class="question-block">
+                <p class="question-text">78. If an electric field line is not straight, what does this imply about the electric field?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q78" value="A"> A. Its magnitude is constant.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q78" value="B"> B. Its direction is constant.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q78" value="C"> C. Its direction is not constant, so it is not uniform.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q78" value="D"> D. It is a uniform electric field.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 79 -->
+            <div class="question-block">
+                <p class="question-text">79. If an electric field is uniform, the electric flux is proportional only to the:</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q79" value="A"> A. Electric field strength.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q79" value="B"> B. Normal area.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q79" value="C"> C. Enclosed charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q79" value="D"> D. Permittivity of free space.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 80 -->
+            <div class="question-block">
+                <p class="question-text">80. What is the primary characteristic of free electrons in conductors?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q80" value="A"> A. They are tightly bound to the nucleus.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q80" value="B"> B. They repel each other, preventing current flow.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q80" value="C"> C. They move when an electric field is applied, allowing current flow.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q80" value="D"> D. They are present in insulators.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 81 -->
+            <div class="question-block">
+                <p class="question-text">81. When a comb is run through hair during the dry season and attracts small pieces of paper, this is an example of:</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q81" value="A"> A. Charging by conduction.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q81" value="B"> B. Charging by induction and polarization.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q81" value="C"> C. Charging by earthing.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q81" value="D"> D. Only magnetic attraction.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 82 -->
+            <div class="question-block">
+                <p class="question-text">82. The Gold-leaf Electroscope is a device used for:</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q82" value="A"> A. Measuring electric field strength.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q82" value="B"> B. Storing electric charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q82" value="C"> C. Detecting and measuring electric charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q82" value="D"> D. Generating high voltages.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 83 -->
+            <div class="question-block">
+                <p class="question-text">83. In Coulomb's Law formula $F = \frac{kQ_1Q_2}{r^2}$, what does $r$ represent?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q83" value="A"> A. The radius of the charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q83" value="B"> B. The distance between the charges.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q83" value="C"> C. The area covered by the charges.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q83" value="D"> D. The permittivity of the medium.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 84 -->
+            <div class="question-block">
+                <p class="question-text">84. What is the relationship between electric force (F) and electric field (E) according to the text?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q84" value="A"> A. $F = E/q$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q84" value="B"> B. $F = qE$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q84" value="C"> C. $F = q/E$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q84" value="D"> D. $F = E + q$
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 85 -->
+            <div class="question-block">
+                <p class="question-text">85. If a neutral point exists between two charges, what must be true about the charges?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q85" value="A"> A. They must be of opposite signs.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q85" value="B"> B. They must be of the same sign (like charges).
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q85" value="C"> C. One must be much larger than the other.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q85" value="D"> D. They must be moving.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 86 -->
+            <div class="question-block">
+                <p class="question-text">86. Why are electric field lines always drawn tangential to the electric field vector?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q86" value="A"> A. To show the strength of the field.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q86" value="B"> B. To indicate the path a positive test charge would take.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q86" value="C"> C. To represent areas of zero potential.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q86" value="D"> D. To illustrate field line density.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 87 -->
+            <div class="question-block">
+                <p class="question-text">87. What is the definition of a vector field?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q87" value="A"> A. A quantity in space whose magnitude is constant at every point.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q87" value="B"> B. A quantity in space whose direction is constant at every point.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q87" value="C"> C. A quantity in space whose quantity at every point is a vector.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q87" value="D"> D. A field that only has a magnitude.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 88 -->
+            <div class="question-block">
+                <p class="question-text">88. What does 'constant in magnitude' imply for electric field lines?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q88" value="A"> A. The lines are curved.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q88" value="B"> B. The lines are evenly spaced.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q88" value="C"> C. The lines cross.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q88" value="D"> D. The lines radiate outwards.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 89 -->
+            <div class="question-block">
+                <p class="question-text">89. What is the meaning of 'normal out of the surface' when defining a vector area for electric flux?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q89" value="A"> A. Perpendicular to the surface and pointing inwards.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q89" value="B"> B. Parallel to the surface.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q89" value="C"> C. Perpendicular to the surface and pointing outwards.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q89" value="D"> D. Tangential to the surface.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 90 -->
+            <div class="question-block">
+                <p class="question-text">90. If the electric field is perpendicular to a surface and going into the surface, what is the sign of the electric flux?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q90" value="A"> A. Positive.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q90" value="B"> B. Zero.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q90" value="C"> C. Negative.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q90" value="D"> D. Undefined.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 91 -->
+            <div class="question-block">
+                <p class="question-text">91. What happens to the electrostatic potential energy of a positive charge when it moves from a point of higher electrostatic potential energy to a point of lower electrostatic potential energy?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q91" value="A"> A. It increases.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q91" value="B"> B. It remains constant.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q91" value="C"> C. It results in a loss of electrostatic potential energy.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q91" value="D"> D. It converts into thermal energy.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 92 -->
+            <div class="question-block">
+                <p class="question-text">92. What is the general form of the work done by the environment ($W_{env}$) in moving a charge from A to B in an electrostatic field?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q92" value="A"> A. $W_{env} = Q V_B - Q V_A$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q92" value="B"> B. $W_{env} = Q V_A - Q V_B$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q92" value="C"> C. $W_{env} = Q(V_A + V_B)$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q92" value="D"> D. $W_{env} = 0$
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 93 -->
+            <div class="question-block">
+                <p class="question-text">93. If a potential difference of 20 V accelerates a charge from rest, and its mass is given, what concept is used to calculate its final velocity?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q93" value="A"> A. Coulomb's Law directly.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q93" value="B"> B. Conservation of mechanical energy.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q93" value="C"> C. Gauss's Law.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q93" value="D"> D. Electric flux.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 94 -->
+            <div class="question-block">
+                <p class="question-text">94. Why is the electric field inside a conductor at electrostatic equilibrium zero?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q94" value="A"> A. Because all charges are concentrated at the center.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q94" value="B"> B. Because if there were a field, electrons would move, negating equilibrium.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q94" value="C"> C. Because conductors repel all external fields.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q94" value="D"> D. Because they are always neutral.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 95 -->
+            <div class="question-block">
+                <p class="question-text">95. In a non-spherical conductor, why do charges tend to cluster more together at pointed edges?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q95" value="A"> A. To increase the total charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q95" value="B"> B. Because forces perpendicular to the surface cancel out on opposite sides.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q95" value="C"> C. To minimize the electric potential.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q95" value="D"> D. To make the field lines uniform.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 96 -->
+            <div class="question-block">
+                <p class="question-text">96. What describes a potential difference that accelerates a positive charge in the opposite direction from its desired motion?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q96" value="A"> A. A positive potential difference.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q96" value="B"> B. A negative potential difference.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q96" value="C"> C. Zero potential difference.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q96" value="D"> D. A neutral potential difference.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 97 -->
+            <div class="question-block">
+                <p class="question-text">97. What defines the acceleration of a charge in a uniform electric field?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q97" value="A"> A. $a = \frac{m}{qE}$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q97" value="B"> B. $a = \frac{qE}{m}$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q97" value="C"> C. $a = \frac{E}{qm}$
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q97" value="D"> D. $a = qmE$
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 98 -->
+            <div class="question-block">
+                <p class="question-text">98. How is the charge on the proton related to the charge on the electron?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q98" value="A"> A. The proton has a larger charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q98" value="B"> B. The electron has a larger charge.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q98" value="C"> C. They are equal in magnitude but opposite in sign.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q98" value="D"> D. They are both neutral.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 99 -->
+            <div class="question-block">
+                <p class="question-text">99. What is the effect of doping a semiconductor with an appropriate dopant?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q99" value="A"> A. It becomes an insulator.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q99" value="B"> B. It becomes a good conductor of electricity.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q99" value="C"> C. Its thermal conductivity decreases.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q99" value="D"> D. It loses all its free electrons.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Question 100 -->
+            <div class="question-block">
+                <p class="question-text">100. If an uncharged sphere B is earthed while being polarized by a positively charged sphere A, what flows from the earth to neutralize the positive charge?</p>
+                <div class="options">
+                    <label class="option-label">
+                        <input type="radio" name="q100" value="A"> A. Protons.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q100" value="B"> B. Neutrons.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q100" value="C"> C. Positive ions.
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="q100" value="D"> D. Electrons.
+                    </label>
+                </div>
+            </div>
+
+            <!-- Field to input email for score delivery -->
+            <div class="email-input-group">
+                <label for="email">Enter your email to receive your score:</label>
+                <input type="email" id="email" name="_replyto" placeholder="your.email@example.com" required class="w-full p-2 border rounded">
+            </div>
+
+            <!-- Hidden field to store the calculated score -->
+            <input type="hidden" name="Quiz Score" id="quizScoreHidden">
+            <input type="hidden" name="Total Questions" value="100">
+
+            <div class="button-group">
+                <button type="submit" class="submit-button" onclick="prepareAndSubmit(event)">Submit Quiz</button>
+                <button type="button" class="reset-button" onclick="resetQuiz()">Reset Quiz</button>
+            </div>
+        </form>
+
+        <div id="submissionMessage" class="score-message">
+            Your quiz results have been sent to your email!
+        </div>
+        <div id="errorMessage" class="error-message">
+            There was an error submitting your quiz. Please try again.
+        </div>
+    </div>
+
+    <script>
+        // Define the correct answers for each question
+        const correctAnswers = {
+            q1: "B", q2: "C", q3: "D", q4: "B", q5: "C",
+            q6: "C", q7: "C", q8: "C", q9: "D", q10: "B",
+            q11: "B", q12: "B", q13: "D", q14: "C", q15: "C",
+            q16: "C", q17: "B", q18: "C", q19: "B", q20: "D",
+            q21: "C", q22: "C", q23: "C", q24: "C", q25: "B",
+            q26: "D", q27: "B", q28: "C", q29: "C", q30: "C",
+            q31: "C", q32: "B", q33: "C", q34: "C", q35: "C",
+            q36: "B", q37: "C", q38: "B", q39: "C", q40: "B",
+            q41: "C", q42: "B", q43: "B", q44: "C", q45: "B",
+            q46: "C", q47: "C", q48: "B", q49: "B", q50: "B",
+            q51: "C", q52: "B", q53: "B", q54: "C", q55: "C",
+            q56: "D", q57: "B", q58: "C", q59: "C", q60: "D",
+            q61: "B", q62: "B", q63: "B", q64: "C", q65: "B",
+            q66: "B", q67: "B", q68: "B", q69: "C", q70: "D",
+            q71: "B", q72: "C", q73: "C", q74: "B", q75: "C",
+            q76: "B", q77: "B", q78: "C", q79: "B", q80: "C",
+            q81: "B", q82: "C", q83: "B", q84: "B", q85: "B",
+            q86: "B", q87: "C", q88: "B", q89: "C", q90: "C",
+            q91: "C", q92: "B", q93: "B", q94: "B", q95: "B",
+            q96: "A", q97: "B", q98: "C", q99: "B", q100: "D"
+        };
+
+        const totalQuestions = Object.keys(correctAnswers).length;
+
+        async function prepareAndSubmit(event) {
+            event.preventDefault(); // Prevent default form submission initially
+
+            const form = document.getElementById('quizForm');
+            const formspreeEndpoint = form.action;
+
+            // Check if the Formspree endpoint is still the placeholder
+            // This is using the hardcoded Formspree endpoint. If you change it later to
+            // an empty string or a different placeholder, update this check accordingly.
+            if (formspreeEndpoint === "https://formspree.io/f/xwpboodz") {
+                document.getElementById('errorMessage').textContent = "Please replace 'https://formspree.io/f/xwpboodz' in the HTML code with your actual Formspree.io endpoint to enable email submission.";
+                document.getElementById('errorMessage').style.display = 'block';
+                return; // Stop execution if placeholder is not replaced
+            }
+
+            let score = 0;
+            const questions = form.querySelectorAll('.question-block');
+
+            // Hide previous messages
+            document.getElementById('submissionMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+
+            // Calculate score
+            for (let i = 1; i <= totalQuestions; i++) {
+                const questionName = `q${i}`;
+                const selectedOption = document.querySelector(`input[name="${questionName}"]:checked`);
+
+                if (selectedOption && selectedOption.value === correctAnswers[questionName]) {
+                    score++;
+                }
+            }
+
+            // Set the calculated score in the hidden input field
+            document.getElementById('quizScoreHidden').value = `${score}/${totalQuestions}`;
+
+            // Manual form submission using Fetch API for better control and feedback
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json' // Formspree requires this header
+                    }
+                });
+
+                if (response.ok) {
+                    document.getElementById('submissionMessage').style.display = 'block';
+                    // Optional: Disable form after successful submission to prevent multiple sends
+                    form.querySelector('.submit-button').disabled = true;
+                    form.querySelector('.reset-button').disabled = false; // Still allow reset
+                } else {
+                    document.getElementById('errorMessage').textContent = "There was an error submitting your quiz. Please check your Formspree endpoint or network connection.";
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = "There was an error submitting your quiz. Please check your Formspree endpoint or network connection: " + error.message;
+                document.getElementById('errorMessage').style.display = 'block';
+                console.error('Error submitting quiz:', error);
+            }
+        }
+
+        function resetQuiz() {
+            const form = document.getElementById('quizForm');
+            form.reset(); // Resets all form fields
+
+            // Hide all messages
+            document.getElementById('submissionMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('instructionMessage').style.display = 'block'; // Show instructions again
+
+            // Enable submit button
+            form.querySelector('.submit-button').disabled = false;
+        }
+    </script>
+</body>
+</html>
