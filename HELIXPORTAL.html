@@ -1,537 +1,380 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>HELIX PORTAL</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Source+Serif+4:wght@600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #203647;
-      --accent: #5a94e2;
-      --accent-light: #e7f1ff;
-      --bg1: #eef3f8;
-      --bg2: #f7fafc;
-      --card: #fff;
-      --border: #dde4ec;
-      --radius: 13px;
-      --shadow: 0 6px 32px 0 rgba(58,80,120,.08);
-      --shadow-sm: 0 2px 10px 0 rgba(40,50,70,.08);
-      --danger: #e55252;
-      --success: #48b87d;
-      --nav-h: 60px;
-      --font-serif: 'Source Serif 4', serif;
-      --font-sans: 'Roboto', Arial, sans-serif;
-    }
-    body {
-      min-height: 100vh;
-      background: linear-gradient(135deg, var(--bg1) 55%, var(--bg2) 100%);
-      margin: 0;
-      font-family: var(--font-sans);
-      color: #253858;
-      font-size: 17px;
-    }
-    #app { min-height: 100vh; }
-    h1,h2,h3 {
-      font-family: var(--font-serif);
-      color: var(--primary);
-      margin-top: 0;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-    }
-    h1 { font-size: 2.2em; }
-    h2 { font-size: 1.5em; }
-    h3 { font-size: 1.18em; }
-    a { color: var(--accent); text-decoration: none; transition: color 0.2s;}
-    a:hover { text-decoration: underline; color: #185bbc; }
-    label { font-size: 1em; color: #374151; margin-bottom: 5px; display: block;}
-    .centered-card {
-      max-width: 430px;
-      margin: 8vh auto 0 auto;
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 2.4em 2em 2em 2em;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 0.4em;
-      animation: fadeIn .7s;
-    }
-    .form-title { margin-bottom: 1.25em; }
-    .button {
-      background: linear-gradient(90deg, var(--accent) 70%, #399fff 100%);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius);
-      padding: 0.9em 1.6em;
-      font-weight: bold;
-      font-size: 1em;
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
-      transition: background 0.2s, box-shadow 0.2s;
-      margin-top: 0.1em;
-      margin-bottom: 1.1em;
-    }
-    .button:hover { background: #2051af; box-shadow:0 2px 24px #3079ed33;}
-    .button.alt { background: #f6f8fa; color: var(--primary); box-shadow: none; }
-    .button.danger { background: var(--danger);}
-    .button.small { font-size: 0.96em; padding: 0.6em 1.1em;}
-    input, textarea, select {
-      width: 100%;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 0.7em;
-      margin-bottom: 1em;
-      font-size: 1em;
-      background: #fafdff;
-      box-sizing: border-box;
-      font-family: inherit;
-      outline: none;
-      transition: border-color 0.18s;
-    }
-    input:focus, textarea:focus, select:focus { border-color: var(--accent);}
-    .error { color: #b20000; margin-bottom: 1em; font-size: 1.01em;}
-    .success { color: var(--success); margin-bottom: 1em; font-size: 1.01em;}
-    .navbar {
-      background: #fff;
-      color: var(--primary);
-      height: var(--nav-h);
-      box-shadow: 0 2px 16px 0 #20344a12;
-      padding: 0 2.2em;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 100;
-      position: sticky;
-      top: 0;
-    }
-    .navbar h1 {
-      font-family: var(--font-serif);
-      font-weight: 700;
-      font-size: 1.45em;
-      color: var(--primary);
-      margin: 0;
-      letter-spacing:0.01em;
-    }
-    .navbar .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 2em;
-    }
-    .navbar .nav-links a {
-      color: var(--primary);
-      font-weight: 500;
-      font-size: 1.02em;
-      padding: 6px 0;
-      border-bottom: 2.5px solid transparent;
-      transition: color 0.15s, border-color 0.2s;
-      margin-left: 0.5em;
-    }
-    .navbar .nav-links a.active, .navbar .nav-links a:focus {
-      color: var(--accent);
-      border-bottom: 2.5px solid var(--accent);
-    }
-    .dashboard {
-      max-width: 980px;
-      margin: 2.5em auto 2em auto;
-      padding: 2.4em 1.5em 2em 1.5em;
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      animation: fadeIn .7s;
-    }
-    .section { margin-bottom: 2.3em;}
-    .table-wrap { overflow-x:auto;}
-    table.timetable {
-      border-collapse: collapse;
-      width: 100%;
-      background: #fafdff;
-      border-radius: var(--radius);
-      box-shadow: 0 1px 10px #3079ed11;
-      margin-bottom:1.5em;
-    }
-    table.timetable th, table.timetable td {
-      border: 1px solid var(--border);
-      padding: 0.7em 0.8em;
-      text-align: left;
-      font-size: 1em;
-    }
-    table.timetable th {
-      background: var(--accent-light);
-      color: var(--primary);
-      font-weight: 700;
-      font-family: var(--font-sans);
-      font-size: 1em;
-    }
-    table.timetable td { background: #fff;}
-    .pdf-link {
-      background: #e8f2ff;
-      color: #2253a7;
-      padding: 4px 10px 4px 7px;
-      border-radius: 5px;
-      font-size: 1em;
-      margin-right: 10px;
-      display: inline-block;
-      margin-bottom: 8px;
-      text-decoration: none;
-    }
-    .pdf-link:hover { background: #d5e7ff; }
-    .pdf-filename { font-size: 0.97em; }
-    @media (max-width: 700px) {
-      .navbar { padding:0 0.7em; }
-      .dashboard { padding: 1.15em 0.45em 1.2em 0.45em;}
-      .centered-card { padding: 1.5em 0.7em 1.2em 0.7em;}
-      table.timetable th, table.timetable td { font-size:0.97em; padding:0.65em 0.32em;}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biochemistry Helix - Student Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB0--bDqGPckl7pENJLMN_95fDNAaXR4zs",
+            authDomain: "helixfinale.firebaseapp.com",
+            projectId: "helixfinale",
+            storageBucket: "helixfinale.firebasestorage.app",
+            messagingSenderId: "556896526389",
+            appId: "1:556896526389:web:0579fb75c4953f716cd17c",
+            measurementId: "G-HB0DND8V2J"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const analytics = getAnalytics(app);
+
+        // Make Firebase services globally available
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseServices = {
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged,
+            sendPasswordResetEmail,
+            doc,
+            setDoc,
+            getDoc,
+            collection,
+            addDoc,
+            getDocs,
+            updateDoc,
+            deleteDoc,
+            query,
+            orderBy
+        };
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Dark theme styles */
+        .dark {
+            background-color: #1a1a1a;
+            color: #e5e5e5;
+        }
+        
+        .dark .bg-white {
+            background-color: #2d2d2d !important;
+            color: #e5e5e5 !important;
+        }
+        
+        .dark .bg-gray-50 {
+            background-color: #1a1a1a !important;
+        }
+        
+        .dark .text-gray-800 {
+            color: #e5e5e5 !important;
+        }
+        
+        .dark .text-gray-700 {
+            color: #d1d1d1 !important;
+        }
+        
+        .dark .text-gray-600 {
+            color: #a3a3a3 !important;
+        }
+        
+        .dark .text-gray-500 {
+            color: #8a8a8a !important;
+        }
+        
+        .dark .border-gray-300 {
+            border-color: #4a4a4a !important;
+        }
+        
+        .dark .border-gray-200 {
+            border-color: #3a3a3a !important;
+        }
+        
+        .dark .bg-blue-50 {
+            background-color: #1e3a5f !important;
+        }
+        
+        .dark .bg-green-50 {
+            background-color: #1e3a2e !important;
+        }
+        
+        .dark .bg-yellow-50 {
+            background-color: #3a3a1e !important;
+        }
+        
+        .dark .bg-purple-50 {
+            background-color: #2e1e3a !important;
+        }
+        
+        .dark .hover\:bg-gray-50:hover {
+            background-color: #3a3a3a !important;
+        }
+        
+        .dark input,
+        .dark textarea {
+            background-color: #3a3a3a !important;
+            color: #e5e5e5 !important;
+            border-color: #4a4a4a !important;
+        }
+        
+        .dark input:focus,
+        .dark textarea:focus {
+            border-color: #60a5fa !important;
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2) !important;
+        }
+    </style>
 </head>
-<body>
-  <div id="app"></div>
-  <script type="module">
-    // Firebase SDKs
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
-    import { getStorage, ref as sref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-storage.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
-
-    // Firebase config (correct storageBucket!)
-    const firebaseConfig = {
-      apiKey: "AIzaSyBFcPsA42BXAnhEwqcOVXGZR1n9FUguyC8",
-      authDomain: "helix-portal-cfea1.firebaseapp.com",
-      projectId: "helix-portal-cfea1",
-      storageBucket: "helix-portal-cfea1.firebasestorage.com",
-      messagingSenderId: "70102314873",
-      appId: "1:70102314873:web:c10acc40e8553b454709a8",
-      measurementId: "G-H99V3K50NS"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    getAnalytics(app);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    // App logic
-    let currentUser = null, currentRole = null, currentTab = 'login';
-    function $(id) { return document.getElementById(id); }
-    const ADMIN_CODE = "HELIX28";
-    const appDiv = $("app");
-
-    // Navbar
-    function renderNavbar() {
-      let html = `
-        <nav class="navbar">
-          <h1>Academic Portal</h1>
-          <div class="nav-links">
-            <a href="#" onclick="setTab('dashboard')" ${currentTab==='dashboard'?'class="active"':''}>Home</a>
-            ${currentRole==='admin'?`
-              <a href="#" onclick="setTab('admin-timetable')" ${currentTab==='admin-timetable'?'class="active"':''}>Admin: Timetable</a>
-              <a href="#" onclick="setTab('admin-materials')" ${currentTab==='admin-materials'?'class="active"':''}>Admin: Materials</a>
-              <a href="#" onclick="setTab('admin-users')" ${currentTab==='admin-users'?'class="active"':''}>Admin: Users</a>
-            `:''}
-            <a href="#" onclick="logout()">Logout</a>
-          </div>
-        </nav>
-      `;
-      return html;
-    }
-    window.setTab = function(tab) {
-      currentTab = tab;
-      renderPage();
-    };
-
-    // AUTH
-    function renderLogin() {
-      appDiv.innerHTML = `
-        <div class="centered-card fade">
-          <h2 class="form-title">Login</h2>
-          <form id="loginForm">
-            <label>Email</label>
-            <input required type="email" name="email" autocomplete="username" />
-            <label>Password</label>
-            <input required type="password" name="password" autocomplete="current-password" />
-            <div id="loginErr" class="error"></div>
-            <button class="button" type="submit">Login</button>
-            <div style="margin-top:0.5em;text-align:center;font-size:0.98em;">
-              <a href="#" id="gotoRegister">Register</a>
-              <span style="color:#aaa">|</span>
-              <a href="#" id="gotoReset">Forgot password?</a>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-dna text-2xl"></i>
+                    <h1 class="text-xl font-bold">Biochemistry Helix</h1>
+                </div>
+                <div id="nav-menu" class="hidden md:flex space-x-6">
+                    <!-- Navigation items will be populated by JavaScript -->
+                </div>
+                <div class="flex items-center space-x-3">
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition duration-300" title="Toggle Theme">
+                        <i id="theme-icon" class="fas fa-moon text-lg"></i>
+                    </button>
+                    
+                    <!-- Home Button (only show when logged in) -->
+                    <button id="home-button" onclick="goHome()" class="hidden p-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition duration-300" title="Go to Homepage">
+                        <i class="fas fa-home text-lg"></i>
+                    </button>
+                    
+                    <div id="auth-buttons" class="flex space-x-3">
+                        <!-- Auth buttons will be populated by JavaScript -->
+                    </div>
+                </div>
             </div>
-          </form>
         </div>
-      `;
-      $("gotoRegister").onclick = e => { e.preventDefault(); setTab('register'); };
-      $("gotoReset").onclick = e => { e.preventDefault(); setTab('reset'); };
-      $("loginForm").onsubmit = async function(e) {
-        e.preventDefault();
-        let email = this.email.value, pass = this.password.value;
-        try {
-          await signInWithEmailAndPassword(auth, email, pass);
-        } catch(err) {
-          $("loginErr").textContent = err.message;
-        }
-      };
-    }
-    function renderRegister() {
-      appDiv.innerHTML = `
-        <div class="centered-card fade">
-          <h2 class="form-title">Create Account</h2>
-          <form id="regForm">
-            <label>Full Name</label>
-            <input required name="name" />
-            <label>Email</label>
-            <input required type="email" name="email" />
-            <label>Password</label>
-            <input required type="password" name="password" />
-            <label>Admin code <span style="color:#aaa;font-size:0.98em;">(only for admins)</span></label>
-            <input name="adminCode" placeholder="Enter admin code to register as admin" />
-            <div id="regErr" class="error"></div>
-            <button class="button" type="submit">Register</button>
-            <div style="margin-top:1em;text-align:center;font-size:0.98em;">
-              <a href="#" id="gotoLogin">Already have an account? Login</a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Login/Signup Section -->
+        <div id="auth-section" class="fade-in">
+            <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
+                <div class="text-center mb-8">
+                    <i class="fas fa-dna text-4xl text-blue-600 mb-4"></i>
+                    <h2 class="text-2xl font-bold text-gray-800">Welcome to Biochemistry Helix</h2>
+                    <p class="text-gray-600 mt-2">Year 1 Student Portal</p>
+                    <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-center justify-center space-x-2 text-blue-700">
+                            <i class="fas fa-cloud text-sm"></i>
+                            <span class="text-sm font-medium">Firebase Backend Active</span>
+                        </div>
+                        <p class="text-xs text-blue-600 mt-1">Real-time cloud database with authentication</p>
+                    </div>
+                </div>
+
+                <!-- Login Form -->
+                <div id="login-form">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Login</h3>
+                    <form onsubmit="handleLogin(event)">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                            <input type="email" id="login-email" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                            <input type="password" id="login-password" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Login
+                        </button>
+                    </form>
+                    <p class="text-center mt-4 text-gray-600">
+                        Don't have an account? 
+                        <button onclick="showSignup()" class="text-blue-600 hover:underline">Sign up</button>
+                    </p>
+                    <p class="text-center mt-2 text-gray-600">
+                        <button onclick="showForgotPassword()" class="text-blue-600 hover:underline text-sm">Forgot your password?</button>
+                    </p>
+                </div>
+
+                <!-- Forgot Password Form -->
+                <div id="forgot-password-form" class="hidden">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Reset Password</h3>
+                    <p class="text-gray-600 text-sm mb-4 text-center">Enter your email address and we'll send you a password reset link.</p>
+                    <form onsubmit="handleForgotPassword(event)">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                            <input type="email" id="forgot-email" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <button type="submit" class="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 transition duration-300">
+                            <i class="fas fa-envelope mr-2"></i>Send Reset Email
+                        </button>
+                    </form>
+                    <p class="text-center mt-4 text-gray-600">
+                        Remember your password? 
+                        <button onclick="showLogin()" class="text-blue-600 hover:underline">Back to Login</button>
+                    </p>
+                </div>
+
+                <!-- Signup Form -->
+                <div id="signup-form" class="hidden">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Sign Up</h3>
+                    <form onsubmit="handleSignup(event)">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+                            <input type="text" id="signup-name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                            <input type="email" id="signup-email" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                            <input type="password" id="signup-password" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="mb-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" id="admin-signup" onchange="toggleAdminCode()" class="mr-2">
+                                <span class="text-sm text-gray-700">Sign up as Admin</span>
+                            </label>
+                        </div>
+                        <div id="admin-code-field" class="mb-4 hidden">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Admin Code</label>
+                            <input type="text" id="admin-code" placeholder="Enter admin code" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-300">
+                            <i class="fas fa-user-plus mr-2"></i>Sign Up
+                        </button>
+                    </form>
+                    <p class="text-center mt-4 text-gray-600">
+                        Already have an account? 
+                        <button onclick="showLogin()" class="text-blue-600 hover:underline">Login</button>
+                    </p>
+                </div>
             </div>
-          </form>
         </div>
-      `;
-      $("gotoLogin").onclick = e => { e.preventDefault(); setTab('login'); };
-      $("regForm").onsubmit = async function(e){
-        e.preventDefault();
-        let name = this.name.value, email = this.email.value, pass = this.password.value;
-        let adminCode = this.adminCode.value.trim();
-        try {
-          let cred = await createUserWithEmailAndPassword(auth, email, pass);
-          let role = adminCode === ADMIN_CODE ? "admin" : "student";
-          await setDoc(doc(db, "users", cred.user.uid), { name, email, role });
-        } catch(err) {
-          $("regErr").textContent = err.message;
-        }
-      }
-    }
-    function renderReset() {
-      appDiv.innerHTML = `
-        <div class="centered-card fade">
-          <h2 class="form-title">Forgot Password</h2>
-          <form id="resetForm">
-            <label>Email</label>
-            <input required type="email" name="email" />
-            <div id="resetMsg" class="success"></div>
-            <div id="resetErr" class="error"></div>
-            <button class="button" type="submit">Send Reset Email</button>
-            <div style="margin-top:1em;text-align:center;font-size:0.98em;">
-              <a href="#" id="gotoLogin2">Back to login</a>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="hidden fade-in">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Welcome back, <span id="user-name"></span>!</h2>
+                <p class="text-gray-600">Access your course materials, timetable, and announcements</p>
             </div>
-          </form>
+
+            <!-- Quick Access Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="showSection('timetable')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Timetable</h3>
+                            <p class="text-gray-600 text-sm">View your schedule</p>
+                        </div>
+                        <i class="fas fa-calendar-alt text-3xl text-blue-600"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="showSection('materials')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Course Materials</h3>
+                            <p class="text-gray-600 text-sm">Access resources</p>
+                        </div>
+                        <i class="fas fa-book text-3xl text-green-600"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="showSection('announcements')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Announcements</h3>
+                            <p class="text-gray-600 text-sm">Latest updates</p>
+                        </div>
+                        <i class="fas fa-bullhorn text-3xl text-purple-600"></i>
+                    </div>
+                </div>
+            </div>
         </div>
-      `;
-      $("gotoLogin2").onclick = e => { e.preventDefault(); setTab('login'); };
-      $("resetForm").onsubmit = async function(e){
-        e.preventDefault();
-        let email = this.email.value;
-        try {
-          await sendPasswordResetEmail(auth, email);
-          $("resetMsg").textContent = "Password reset email sent!";
-        } catch(err) {
-          $("resetErr").textContent = err.message;
-        }
-      };
-    }
-    async function logout() {
-      await signOut(auth);
-    }
 
-    // Dashboard
-    function renderDashboard() {
-      appDiv.innerHTML = renderNavbar() + `
-        <div class="dashboard fade">
-          <h2>Welcome, ${currentUser.displayName||currentUser.email}!</h2>
-          <div id="dashboard-timetable"></div>
-          <div id="dashboard-materials"></div>
+        <!-- Timetable Section -->
+        <div id="timetable-section" class="hidden fade-in">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-calendar-alt text-blue-600 mr-3"></i>Timetable
+                    </h2>
+                    <div id="admin-timetable-controls" class="hidden">
+                        <button onclick="editTimetable()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">
+                            <i class="fas fa-edit mr-2"></i>Edit Timetable
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead>
+                            <tr class="bg-blue-50">
+                                <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Time</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Monday</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Tuesday</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Wednesday</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Thursday</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Friday</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timetable-body">
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-3 font-medium bg-gray-50">9:00 - 10:00</td>
+                                <td class="border border-gray-300 px-4 py-3">Biochemistry Lecture<br><span class="text-sm text-gray-600">Room A101</span></td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                                <td class="border border-gray-300 px-4 py-3">Organic Chemistry<br><span class="text-sm text-gray-600">Room B205</span></td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                                <td class="border border-gray-300 px-4 py-3">Lab Session<br><span class="text-sm text-gray-600">Lab 1</span></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-3 font-medium bg-gray-50">10:00 - 11:00</td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                                <td class="border border-gray-300 px-4 py-3">Molecular Biology<br><span class="text-sm text-gray-600">Room C301</span></td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                                <td class="border border-gray-300 px-4 py-3">Biochemistry Lecture<br><span class="text-sm text-gray-600">Room A101</span></td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-3 font-medium bg-gray-50">11:00 - 12:00</td>
+                                <td class="border border-gray-300 px-4 py-3">Tutorial<br><span class="text-sm text-gray-600">Room D102</span></td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                                <td class="border border-gray-300 px-4 py-3">Lab Session<br><span class="text-sm text-gray-600">Lab 2</span></td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                                <td class="border border-gray-300 px-4 py-3">Seminar<br><span class="text-sm text-gray-600">Room E201</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-      `;
-      renderTimetable("dashboard-timetable", false);
-      renderMaterials("dashboard-materials", false);
-    }
 
-    // Timetable
-    function renderTimetable(targetId, editable) {
-      const target = $(targetId);
-      onSnapshot(collection(db, "timetable"), snap => {
-        let html = `<h3>Timetable</h3><table class="timetable"><thead><tr><th>Course</th><th>Day</th><th>Time</th><th>Venue</th>${editable?'<th>Actions</th>':''}</tr></thead><tbody>`;
-        snap.forEach(docu => {
-          let t = docu.data();
-          html += `<tr>
-            <td>${t.course}</td><td>${t.day}</td><td>${t.time}</td><td>${t.venue}</td>
-            ${editable ? `<td>
-              <button class="button small" onclick="editTimetable('${docu.id}')">Edit</button>
-              <button class="button small danger" onclick="deleteTimetable('${docu.id}')">Delete</button>
-            </td>`: ''}
-          </tr>`;
-        });
-        html += `</tbody></table>`;
-        if (editable) html += `
-          <form id="addttf" style="margin-top:1em;">
-            <label>Course</label><input required name="course">
-            <label>Day</label><input required name="day">
-            <label>Time</label><input required name="time">
-            <label>Venue</label><input required name="venue">
-            <button type="submit">Add</button>
-            <span class="error" id="tt_err"></span>
-          </form>`;
-        target.innerHTML = html;
-        if (editable && $("addttf")) {
-          $("addttf").onsubmit = async function(e){
-            e.preventDefault();
-            let data = {course:this.course.value,day:this.day.value,time:this.time.value,venue:this.venue.value};
-            try {
-              await addDoc(collection(db, "timetable"), data);
-              this.reset();
-            } catch(err) {
-              $("tt_err").textContent = err.message;
-            }
-          }
-        }
-      });
-    }
-    window.editTimetable = async function(id) {
-      const ttRef = doc(db, "timetable", id);
-      const ttdoc = await getDoc(ttRef);
-      let t = ttdoc.data();
-      $("dashboard-timetable").innerHTML = `
-        <h3>Edit Timetable Entry</h3>
-        <form id="edittf">
-          <label>Course</label><input required name="course" value="${t.course}">
-          <label>Day</label><input required name="day" value="${t.day}">
-          <label>Time</label><input required name="time" value="${t.time}">
-          <label>Venue</label><input required name="venue" value="${t.venue}">
-          <button type="submit">Save</button>
-          <button type="button" onclick="setTab('admin-timetable')">Cancel</button>
-          <span class="error" id="tt_err"></span>
-        </form>`;
-      $("edittf").onsubmit = async function(e){
-        e.preventDefault();
-        try {
-          await updateDoc(ttRef, {course:this.course.value,day:this.day.value,time:this.time.value,venue:this.venue.value});
-          setTab('admin-timetable');
-        } catch(err) {
-          $("tt_err").textContent = err.message;
-        }
-      }
-    };
-    window.deleteTimetable = async function(id) {
-      if (!confirm("Delete this row?")) return;
-      await deleteDoc(doc(db, "timetable", id));
-    };
-
-    // Materials
-    function renderMaterials(targetId, editable) {
-      const target = $(targetId);
-      onSnapshot(collection(db, "materials"), snap => {
-        let html = `<h3>Course Materials</h3>`;
-        snap.forEach(docu => {
-          let m = docu.data();
-          html += `<a class="pdf-link" href="${m.url}" target="_blank" download="${m.name}">&#128196; ${m.name}</a>`;
-          if (editable) html += `<button class="button small danger" onclick="deleteMaterial('${docu.id}','${m.storagePath}')">Delete</button>`;
-          html += `<br/>`;
-        });
-        if (editable) html += `
-          <form id="uploadf" style="margin-top:1em;">
-            <label>Upload PDF</label>
-            <input type="file" name="pdf" accept="application/pdf" required>
-            <button type="submit">Upload</button>
-            <span class="error" id="up_err"></span>
-          </form>`;
-        target.innerHTML = html;
-        if (editable && $("uploadf")) {
-          $("uploadf").onsubmit = async function(e){
-            e.preventDefault();
-            let file = this.pdf.files[0];
-            if (!file) return;
-            let sPath = `materials/${Date.now()}_${file.name}`;
-            try {
-              let snapshot = await uploadBytes(sref(storage, sPath), file);
-              let url = await getDownloadURL(snapshot.ref);
-              await addDoc(collection(db,"materials"), {name:file.name,url:url,storagePath:sPath});
-              this.reset();
-            } catch(err) {
-              $("up_err").textContent = err.message;
-            }
-          }
-        }
-      });
-    }
-    window.deleteMaterial = async function(id, storagePath) {
-      if (!confirm("Delete this material and its file?")) return;
-      await deleteDoc(doc(db, "materials", id));
-      await deleteObject(sref(storage, storagePath));
-    };
-
-    // Users (Admin)
-    function renderUsers() {
-      appDiv.innerHTML = renderNavbar() + `<div class="dashboard fade">
-        <h2>Manage Users</h2>
-        <table class="timetable" id="usertable"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Actions</th></tr></thead><tbody></tbody></table>
-        <span id="user_err" class="error"></span>
-      </div>`;
-      getDocs(collection(db,"users")).then(snap=>{
-        let html = '';
-        snap.forEach(docu => {
-          let u = docu.data();
-          html += `<tr>
-            <td>${u.name||''}</td>
-            <td>${u.email}</td>
-            <td>${u.role}</td>
-            <td>${docu.id===auth.currentUser.uid ? '<span style="color:#aaa;">(You)</span>' : `<button class="button small danger" onclick="deleteUser('${docu.id}')">Delete</button>`}</td>
-          </tr>`;
-        });
-        $("usertable").querySelector("tbody").innerHTML = html;
-      });
-    }
-    window.deleteUser = async function(uid) {
-      if (!confirm("Delete this user? This is permanent!")) return;
-      await deleteDoc(doc(db, "users", uid));
-      renderUsers();
-    };
-
-    // ROUTER
-    function renderPage() {
-      if (!currentUser) {
-        if (currentTab==='register') renderRegister();
-        else if (currentTab==='reset') renderReset();
-        else renderLogin();
-      } else {
-        if (currentTab==='dashboard') renderDashboard();
-        else if (currentTab==='admin-timetable' && currentRole==="admin") {
-          appDiv.innerHTML = renderNavbar() + `<div class="dashboard fade"><div id="dashboard-timetable"></div></div>`;
-          renderTimetable("dashboard-timetable", true);
-        }
-        else if (currentTab==='admin-materials' && currentRole==="admin") {
-          appDiv.innerHTML = renderNavbar() + `<div class="dashboard fade"><div id="dashboard-materials"></div></div>`;
-          renderMaterials("dashboard-materials", true);
-        }
-        else if (currentTab==='admin-users' && currentRole==="admin") {
-          renderUsers();
-        }
-        else renderDashboard();
-      }
-    }
-
-    // AUTH STATE
-    onAuthStateChanged(auth, async (user) => {
-      currentUser = user;
-      if (user) {
-        let uDoc = await getDoc(doc(db, "users", user.uid));
-        currentRole = uDoc.exists() ? uDoc.data().role : "student";
-        currentTab = 'dashboard';
-      } else {
-        currentRole = null;
-        currentTab = 'login';
-      }
-      renderPage();
-    });
-  </script>
-</body>
-</html>
+        <!-- Course Materials Section -->
+        <div id="materials-section" class="hidden fade-in">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-book text-green-600 mr-3"></i>Course Materials
+                    </h2>
+                
