@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biochemistry Helix - Student Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB0--bDqGPckl7pENJLMN_95fDNAaXR4zs",
+            authDomain: "helixfinale.firebaseapp.com",
+            projectId: "helixfinale",
+            storageBucket: "helixfinale.firebasestorage.app",
+            messagingSenderId: "556896526389",
+            appId: "1:556896526389:web:0579fb75c4953f716cd17c",
+            measurementId: "G-HB0DND8V2J"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const analytics = getAnalytics(app);
+
+        // Make Firebase services globally available
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseServices = {
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged,
+            sendPasswordResetEmail,
+            doc,
+            setDoc,
+            getDoc,
+            collection,
+            addDoc,
+            getDocs,
+            updateDoc,
+            deleteDoc,
+            query,
+            orderBy
+        };
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Dark theme styles */
+        .dark {
+            background-color: #1a1a1a;
+            color: #e5e5e5;
+        }
+        
+        .dark .bg-white {
+            background-color: #2d2d2d !important;
+            color: #e5e5e5 !important;
+        }
+        
+        .dark .bg-gray-50 {
+            background-color: #1a1a1a !important;
+        }
+        
+        .dark .text-gray-800 {
+            color: #e5e5e5 !important;
+        }
+        
+        .dark .text-gray-700 {
+            color: #d1d1d1 !important;
+        }
+        
+        .dark .text-gray-600 {
+            color: #a3a3a3 !important;
+        }
+        
+        .dark .text-gray-500 {
+            color: #8a8a8a !important;
+        }
+        
+        .dark .border-gray-300 {
+            border-color: #4a4a4a !important;
+        }
+        
+        .dark .border-gray-200 {
+            border-color: #3a3a3a !important;
+        }
+        
+        .dark .bg-blue-50 {
+            background-color: #1e3a5f !important;
+        }
+        
+        .dark .bg-green-50 {
+            background-color: #1e3a2e !important;
+        }
+        
+        .dark .bg-yellow-50 {
+            background-color: #3a3a1e !important;
+        }
+        
+        .dark .bg-purple-50 {
+            background-color: #2e1e3a !important;
+        }
+        
+        .dark .hover\:bg-gray-50:hover {
+            background-color: #3a3a3a !important;
+        }
+        
+        .dark input,
+        .dark textarea {
+            background-color: #3a3a3a !important;
+            color: #e5e5e5 !important;
+            border-color: #4a4a4a !important;
+        }
+        
+        .dark input:focus,
+        .dark textarea:focus {
+            border-color: #60a5fa !important;
+            box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2) !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="gradient-bg text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-dna text-2xl"></i>
+                    <h1 class="text-xl font-bold">Biochemistry Helix</h1>
+                </div>
+                <div id="nav-menu" class="hidden md:flex space-x-6">
+                    <!-- Navigation items will be populated by JavaScript -->
+                </div>
+                <div class="flex items-center space-x-3">
+                    <!-- Theme Toggle -->
+                    <button id="theme-toggle" onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition duration-300" title="Toggle Theme">
+                        <i id="theme-icon" class="fas fa-moon text-lg"></i>
+                    </button>
+                    
+                    <!-- Home Button (only show when logged in) -->
+                    <button id="home-button" onclick="goHome()" class="hidden p-2 rounded-lg hover:bg-white hover:bg-opacity-20 transition duration-300" title="Go to Homepage">
+                        <i class="fas fa-home text-lg"></i>
+                    </button>
+                    
+                    <div id="auth-buttons" class="flex space-x-3">
+                        <!-- Auth buttons will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Login/Signup Section -->
+        <div id="auth-section" class="fade-in">
+            <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
+                <div class="text-center mb-8">
+                    <i class="fas fa-dna text-4xl text-blue-600 mb-4"></i>
+                    <h2 class="text-2xl font-bold text-gray-800">Welcome to Biochemistry Helix</h2>
+                    <p class="text-gray-600 mt-2">Year 1 Student Portal</p>
+                    <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-center justify-center space-x-2 text-blue-700">
+                            <i class="fas fa-cloud text-sm"></i>
+                            <span class="text-sm font-medium">Firebase Backend Active</span>
+                        </div>
+                        <p class="text-xs text-blue-600 mt-1">Real-time cloud database with authentication</p>
+                    </div>
+                </div>
+
+                <!-- Login Form -->
+                <div id="login-form">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Login</h3>
+                    <form onsubmit="handleLogin(event)">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                            <input type="email" id="login-email" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                            <input type="password" id="login-password" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Login
+                        </button>
+                    </form>
+                    <p class="text-center mt-4 text-gray-600">
+                        Don't have an account? 
+                        <button onclick="showSignup()" class="text-blue-600 hover:underline">Sign up</button>
+                    </p>
+                    <p class="text-center mt-2 text-gray-600">
+                        <button onclick="showForgotPassword()" class="text-blue-600 hover:underline text-sm">Forgot your password?</button>
+                    </p>
+                </div>
+
+                <!-- Forgot Password Form -->
+                <div id="forgot-password-form" class="hidden">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Reset Password</h3>
+                    <p class="text-gray-600 text-sm mb-4 text-center">Enter your email address and we'll send you a password reset link.</p>
+                    <form onsubmit="handleForgotPassword(event)">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                            <input type="email" id="forgot-email" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <button type="submit" class="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700 transition duration-300">
+                            <i class="fas fa-envelope mr-2"></i>Send Reset Email
+                        </button>
+                    </form>
+                    <p class="text-center mt-4 text-gray-600">
+                        Remember your password? 
+                        <button onclick="showLogin()" class="text-blue-600 hover:underline">Back to Login</button>
+                    </p>
+                </div>
+
+                <!-- Signup Form -->
+                <div id="signup-form" class="hidden">
+                    <h3 class="text-xl font-semibold mb-4 text-center">Sign Up</h3>
+                    <form onsubmit="handleSignup(event)">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+                            <input type="text" id="signup-name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                            <input type="email" id="signup-email" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                            <input type="password" id="signup-password" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="mb-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" id="admin-signup" onchange="toggleAdminCode()" class="mr-2">
+                                <span class="text-sm text-gray-700">Sign up as Admin</span>
+                            </label>
+                        </div>
+                        <div id="admin-code-field" class="mb-4 hidden">
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Admin Code</label>
+                            <input type="text" id="admin-code" placeholder="Enter admin code" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-300">
+                            <i class="fas fa-user-plus mr-2"></i>Sign Up
+                        </button>
+                    </form>
+                    <p class="text-center mt-4 text-gray-600">
+                        Already have an account? 
+                        <button onclick="showLogin()" class="text-blue-600 hover:underline">Login</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="hidden fade-in">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Welcome back, <span id="user-name"></span>!</h2>
+                <p class="text-gray-600">Access your course materials, timetable, and announcements</p>
+            </div>
+
+            <!-- Quick Access Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="showSection('timetable')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Timetable</h3>
+                            <p class="text-gray-600 text-sm">View your schedule</p>
+                        </div>
+                        <i class="fas fa-calendar-alt text-3xl text-blue-600"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="showSection('materials')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Course Materials</h3>
+                            <p class="text-gray-600 text-sm">Access resources</p>
+                        </div>
+                        <i class="fas fa-book text-3xl text-green-600"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 card-hover cursor-pointer" onclick="showSection('announcements')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Announcements</h3>
+                            <p class="text-gray-600 text-sm">Latest updates</p>
+                        </div>
+                        <i class="fas fa-bullhorn text-3xl text-purple-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timetable Section -->
+        <div id="timetable-section" class="hidden fade-in">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-calendar-alt text-blue-600 mr-3"></i>Timetable
+                    </h2>
+                    <div id="admin-timetable-controls" class="hidden">
+                        <button onclick="editTimetable()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300">
+                            <i class="fas fa-edit mr-2"></i>Edit Timetable
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead>
+                            <tr class="bg-blue-50">
+                                <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Time</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Monday</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Tuesday</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Wednesday</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Thursday</th>
+                                <th class="border border-gray-300 px-4 py-3 text-left font-semibold">Friday</th>
+                            </tr>
+                        </thead>
+                        <tbody id="timetable-body">
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-3 font-medium bg-gray-50">9:00 - 10:00</td>
+                                <td class="border border-gray-300 px-4 py-3">Biochemistry Lecture<br><span class="text-sm text-gray-600">Room A101</span></td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                                <td class="border border-gray-300 px-4 py-3">Organic Chemistry<br><span class="text-sm text-gray-600">Room B205</span></td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                                <td class="border border-gray-300 px-4 py-3">Lab Session<br><span class="text-sm text-gray-600">Lab 1</span></td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-3 font-medium bg-gray-50">10:00 - 11:00</td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                                <td class="border border-gray-300 px-4 py-3">Molecular Biology<br><span class="text-sm text-gray-600">Room C301</span></td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                                <td class="border border-gray-300 px-4 py-3">Biochemistry Lecture<br><span class="text-sm text-gray-600">Room A101</span></td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                            </tr>
+                            <tr>
+                                <td class="border border-gray-300 px-4 py-3 font-medium bg-gray-50">11:00 - 12:00</td>
+                                <td class="border border-gray-300 px-4 py-3">Tutorial<br><span class="text-sm text-gray-600">Room D102</span></td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                                <td class="border border-gray-300 px-4 py-3">Lab Session<br><span class="text-sm text-gray-600">Lab 2</span></td>
+                                <td class="border border-gray-300 px-4 py-3">-</td>
+                                <td class="border border-gray-300 px-4 py-3">Seminar<br><span class="text-sm text-gray-600">Room E201</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Materials Section -->
+        <div id="materials-section" class="hidden fade-in">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-book text-green-600 mr-3"></i>Course Materials
+                    </h2>
+                
