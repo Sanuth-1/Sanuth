@@ -142,6 +142,31 @@
             border-color: #60a5fa !important;
             box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2) !important;
         }
+.comment-section {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+.comments-list {
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.comments-list::-webkit-scrollbar {
+  width: 6px;
+}
+.comments-list::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+.comment {
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-size: 0.875rem;
+}
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -539,15 +564,7 @@
                                 <button class="admin-only hidden text-red-600 hover:text-red-800" onclick="deleteAnnouncement(3)">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                            </div>
-                        </div>
-                        <p class="text-gray-700">Don't forget that your first biochemistry assignment is due next Monday. Please submit your reports using the template provided in the course materials section.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-<!-- Main Content -->
+                                <!-- Main Content -->
     <div class="comment-section mt-4">
   <h4 class="font-semibold text-sm text-gray-700 mb-2">Comments</h4>
   <div class="comments-list space-y-2"></div>
@@ -556,6 +573,15 @@
     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">Post</button>
   </form>
 </div>
+
+                            </div>
+                        </div>
+                        <p class="text-gray-700">Don't forget that your first biochemistry assignment is due next Monday. Please submit your reports using the template provided in the course materials section.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <!-- Modal for file upload -->
     <div id="upload-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
@@ -1351,6 +1377,24 @@
                         <p class="text-gray-700">${announcement.message}</p>
                         ${announcement.createdByName ? `<p class="text-xs text-gray-500 mt-2">Posted by ${announcement.createdByName}</p>` : ''}
                         ${announcement.editedAt ? `<p class="text-xs text-gray-500">Last edited ${FirebaseBackend.formatDate(announcement.editedAt)}</p>` : ''}
+                        <script>
+function addComment(event, form) {
+  event.preventDefault();
+  const input = form.querySelector('input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const commentEl = document.createElement('div');
+  commentEl.className = 'comment';
+  commentEl.textContent = text;
+
+  const commentsList = form.previousElementSibling;
+  commentsList.appendChild(commentEl);
+
+  input.value = '';
+}
+</script>
+
                     </div>
                 `;
             }).join('');
@@ -1479,6 +1523,7 @@
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96a178c8067437b6',t:'MTc1NDM0NjMzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+
 
 
 
