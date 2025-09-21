@@ -1,163 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>NSBS Elections Voting Platform</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NSBS Voting Platform</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background: #f4f4f9;
       margin: 0;
       padding: 20px;
-      transition: background 0.3s, color 0.3s;
     }
-    header {
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
       text-align: center;
-      margin-bottom: 20px;
     }
-    .auth-box {
-      max-width: 400px;
-      margin: 10px auto;
-      padding: 15px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    input {
+    input, button {
       width: 100%;
       padding: 10px;
-      margin: 5px 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      font-size: 16px;
     }
     button {
-      margin-top: 8px;
-      padding: 10px;
-      width: 100%;
-      border: none;
-      border-radius: 8px;
-      background: #007bff;
-      color: #fff;
+      background: #007BFF;
+      color: white;
       cursor: pointer;
-      font-size: 14px;
+      border: none;
     }
     button:hover {
       background: #0056b3;
     }
     .candidates {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
       margin-top: 20px;
     }
     .card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      text-align: center;
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fafafa;
     }
     .card img {
-      width: 120px;
-      height: 120px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       object-fit: cover;
-      margin-bottom: 10px;
-    }
-    .vote-btn {
-      display: inline-block;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      background: #28a745;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
-    }
-    .vote-btn:hover {
-      background: #1e7e34;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      top:0; left:0;
-      width:100%; height:100%;
-      background: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-    }
-    .dark-mode {
-      background: #121212;
-      color: #ddd;
-    }
-    .dark-mode .card {
-      background: #1e1e1e;
-      color: #fff;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>NSBS Elections 2025</h1>
-    <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
-  </header>
+  <div class="container">
+    <h2>NSBS Elections Voting</h2>
 
-  <!-- Login/Register Box -->
-  <div class="auth-box" id="authBox">
-    <h3>Login to Vote</h3>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="register()">Register</button>
-    <button onclick="login()">Login</button>
-    <p id="authMsg"></p>
-  </div>
+    <!-- Login/Register -->
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="registerBtn">Register</button>
+    <button id="loginBtn">Login</button>
 
-  <!-- Candidate Cards -->
-  <section class="candidates" id="candidatesSection" style="display:none;">
-    <div class="card">
-      <img src="candidate1.jpg" alt="Candidate 1">
-      <h3>Jane Doe</h3>
-      <p>President</p>
-      <button class="vote-btn" onclick="confirmVote('President','Jane Doe')">Vote</button>
-    </div>
-    <div class="card">
-      <img src="candidate2.jpg" alt="Candidate 2">
-      <h3>John Smith</h3>
-      <p>President</p>
-      <button class="vote-btn" onclick="confirmVote('President','John Smith')">Vote</button>
-    </div>
-    <div class="card">
-      <img src="candidate3.jpg" alt="Candidate 3">
-      <h3>Ada Okafor</h3>
-      <p>Assistant Social Secretary</p>
-      <button class="vote-btn" onclick="confirmVote('Assistant Social Secretary','Ada Okafor')">Vote</button>
-    </div>
-  </section>
-
-  <!-- Confirmation Modal -->
-  <div class="modal" id="voteModal">
-    <div class="modal-content">
-      <p id="voteText">Confirm your vote?</p>
-      <button class="vote-btn" onclick="submitVote()">Confirm</button>
-      <button class="vote-btn" style="background:#aaa;" onclick="closeModal()">Cancel</button>
+    <!-- Candidate List -->
+    <div class="candidates" id="candidates">
+      <div class="card">
+        <div>
+          <strong>Candidate A</strong><br />
+          Position: President
+        </div>
+        <button class="voteBtn" data-candidate="Candidate A">Vote</button>
+      </div>
+      <div class="card">
+        <div>
+          <strong>Candidate B</strong><br />
+          Position: President
+        </div>
+        <button class="voteBtn" data-candidate="Candidate B">Vote</button>
+      </div>
+      <div class="card">
+        <div>
+          <strong>Candidate C</strong><br />
+          Position: Assistant Social Sec
+        </div>
+        <button class="voteBtn" data-candidate="Candidate C">Vote</button>
+      </div>
     </div>
   </div>
 
-  <!-- Firebase + App Logic -->
   <script type="module">
-    // Import Firebase SDKs
+    // Import Firebase SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-    // Firebase config
+    // Your Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDHSdIhYHR8okBS6iqgYVhcYcRMna5BCLQ",
       authDomain: "nsbselections.firebaseapp.com",
@@ -168,90 +115,64 @@
       measurementId: "G-1FX91W66VE"
     };
 
-    // Initialize Firebase
+    // Init Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Auth Functions
-    async function register() {
+    // Register
+    document.getElementById("registerBtn").addEventListener("click", async () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       try {
         await createUserWithEmailAndPassword(auth, email, password);
-        document.getElementById("authMsg").innerText = "Registered! Now login.";
-      } catch (e) {
-        document.getElementById("authMsg").innerText = e.message;
+        alert("Registered successfully!");
+      } catch (error) {
+        alert(error.message);
       }
-    }
+    });
 
-    async function login() {
+    // Login
+    document.getElementById("loginBtn").addEventListener("click", async () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       try {
         await signInWithEmailAndPassword(auth, email, password);
-      } catch (e) {
-        document.getElementById("authMsg").innerText = e.message;
-      }
-    }
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        document.getElementById("authBox").style.display = "none";
-        document.getElementById("candidatesSection").style.display = "grid";
-      } else {
-        document.getElementById("authBox").style.display = "block";
-        document.getElementById("candidatesSection").style.display = "none";
+        alert("Logged in successfully!");
+      } catch (error) {
+        alert(error.message);
       }
     });
 
-    // Voting logic
-    let currentVote = { position: "", candidate: "" };
+    // Voting
+    document.querySelectorAll(".voteBtn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const user = auth.currentUser;
+        if (!user) {
+          alert("Login first before voting!");
+          return;
+        }
 
-    window.confirmVote = async function(position, candidate) {
-      const user = auth.currentUser;
-      if (!user) return alert("Login first!");
+        const candidate = btn.dataset.candidate;
+        const voteRef = doc(db, "votes", user.uid);
 
-      // Check if user already voted for this position
-      const voteRef = doc(db, "votes", user.uid + "_" + position);
-      const voteSnap = await getDoc(voteRef);
-      if (voteSnap.exists()) {
-        alert("You already voted for " + position + ".");
-        return;
-      }
+        try {
+          const voteSnap = await getDoc(voteRef);
+          if (voteSnap.exists()) {
+            alert("You have already voted!");
+            return;
+          }
 
-      currentVote = { position, candidate };
-      document.getElementById("voteText").innerText =
-        `Are you sure you want to vote for ${candidate} as ${position}?`;
-      document.getElementById("voteModal").style.display = "flex";
-    }
-
-    window.closeModal = function() {
-      document.getElementById("voteModal").style.display = "none";
-    }
-
-    window.submitVote = async function() {
-      const user = auth.currentUser;
-      if (!user) return alert("Login first!");
-
-      try {
-        await setDoc(doc(db, "votes", user.uid + "_" + currentVote.position), {
-          uid: user.uid,
-          email: user.email,
-          position: currentVote.position,
-          candidate: currentVote.candidate,
-          timestamp: new Date()
-        });
-        alert("Vote recorded for " + currentVote.candidate + " (" + currentVote.position + ")");
-      } catch (e) {
-        alert("Error saving vote: " + e.message);
-      }
-      closeModal();
-    }
-
-    window.toggleDarkMode = function() {
-      document.body.classList.toggle("dark-mode");
-    }
+          await setDoc(voteRef, {
+            candidate: candidate,
+            timestamp: new Date()
+          });
+          alert(`You voted for ${candidate}!`);
+        } catch (error) {
+          alert(error.message);
+        }
+      });
+    });
   </script>
 </body>
 </html>
