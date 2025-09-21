@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NSBS Voting Platform</title>
   <style>
     body {
@@ -12,7 +12,7 @@
       padding: 20px;
     }
     .container {
-      max-width: 500px;
+      max-width: 600px;
       margin: auto;
       background: white;
       padding: 20px;
@@ -21,6 +21,7 @@
     }
     h2 {
       text-align: center;
+      margin-bottom: 20px;
     }
     input, button {
       width: 100%;
@@ -66,11 +67,8 @@
   <div class="container">
     <h2>NSBS Elections Voting</h2>
 
-    <!-- Login/Register -->
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
-    <button id="registerBtn">Register</button>
-    <button id="loginBtn">Login</button>
+    <!-- Unique Voter ID -->
+    <input type="text" id="voterId" placeholder="Enter your Voter ID" />
 
     <!-- Candidate List -->
     <div class="candidates" id="candidates">
@@ -101,10 +99,9 @@
   <script type="module">
     // Import Firebase SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-    // Your Firebase config
+    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyDHSdIhYHR8okBS6iqgYVhcYcRMna5BCLQ",
       authDomain: "nsbselections.firebaseapp.com",
@@ -117,44 +114,19 @@
 
     // Init Firebase
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Register
-    document.getElementById("registerBtn").addEventListener("click", async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        alert("Registered successfully!");
-      } catch (error) {
-        alert(error.message);
-      }
-    });
-
-    // Login
-    document.getElementById("loginBtn").addEventListener("click", async () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        alert("Logged in successfully!");
-      } catch (error) {
-        alert(error.message);
-      }
-    });
-
-    // Voting
+    // Voting Logic
     document.querySelectorAll(".voteBtn").forEach((btn) => {
       btn.addEventListener("click", async () => {
-        const user = auth.currentUser;
-        if (!user) {
-          alert("Login first before voting!");
+        const voterId = document.getElementById("voterId").value.trim();
+        if (!voterId) {
+          alert("Enter your Voter ID first!");
           return;
         }
 
         const candidate = btn.dataset.candidate;
-        const voteRef = doc(db, "votes", user.uid);
+        const voteRef = doc(db, "votes", voterId);
 
         try {
           const voteSnap = await getDoc(voteRef);
@@ -167,9 +139,9 @@
             candidate: candidate,
             timestamp: new Date()
           });
-          alert(`You voted for ${candidate}!`);
+          alert(`Your vote for ${candidate} has been recorded!`);
         } catch (error) {
-          alert(error.message);
+          alert("Error: " + error.message);
         }
       });
     });
