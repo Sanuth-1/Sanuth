@@ -1,107 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NSBS Voting Platform</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NSBS Voting — Passwordless Email Sign-in</title>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f9;
-      margin: 0;
-      padding: 20px;
+    /* Clean UI, responsive, small "drip" */
+    :root{
+      --bg:#f4f6fb; --card:#fff; --primary:#2a5298; --accent:#28a745; --muted:#6b7280;
     }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ddd;
-      font-size: 16px;
-    }
-    button {
-      background: #007BFF;
-      color: white;
-      cursor: pointer;
-      border: none;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    .candidates {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin-top: 20px;
-    }
-    .card {
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #fafafa;
-    }
-    .card img {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
+    *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0}
+    body{background:var(--bg);color:#111;min-height:100vh;display:flex;flex-direction:column}
+    header{background:linear-gradient(90deg,#1e3c72,#2a5298);color:#fff;padding:18px 12px;display:flex;align-items:center;justify-content:space-between}
+    header h1{font-size:1.1rem;margin:0}
+    .dark-toggle{background:transparent;border:1px solid rgba(255,255,255,0.18);color:#fff;padding:6px 10px;border-radius:999px;cursor:pointer}
+    main{max-width:980px;margin:28px auto;padding:0 16px;width:100%}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:24px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    /* Left (voting) */
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(20,20,40,0.06)}
+    h2{margin-bottom:12px;font-size:1.15rem}
+    .help{color:var(--muted);font-size:0.95rem;margin-bottom:12px}
+    .auth-row{display:flex;gap:8px;margin-bottom:12px}
+    .auth-row input{flex:1;padding:10px;border-radius:8px;border:1px solid #e2e8f0}
+    .btn{background:var(--primary);color:#fff;padding:10px 12px;border-radius:8px;border:none;cursor:pointer}
+    .btn.secondary{background:#f3f4f6;color:#111;border:1px solid #e6e9ef}
+    .small{font-size:0.9rem}
+    .candidates{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:12px}
+    .candidate{background:#fff;border-radius:10px;padding:12px;text-align:center;border:1px solid #eef2ff}
+    .candidate img{width:88px;height:88px;border-radius:999px;object-fit:cover;margin-bottom:8px}
+    .candidate h3{font-size:1rem;margin-bottom:6px}
+    .candidate p{color:var(--muted);margin-bottom:8px;font-size:0.92rem}
+    .vote-btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+    /* right (panel) */
+    .panel{display:flex;flex-direction:column;gap:12px}
+    .status{padding:12px;border-radius:10px;background:#fbfcff;border:1px solid #e8eefc;color:#111}
+    .result-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .muted{color:var(--muted)}
+    footer{text-align:center;padding:14px 6px;color:#666;font-size:0.9rem;margin-top:24px}
+    /* modal */
+    .modal-wrap{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.5);z-index:60}
+    .modal{background:#fff;padding:18px;border-radius:12px;width:92%;max-width:420px}
+    .modal h3{margin-bottom:8px}
+    .close-x{float:right;cursor:pointer;background:#eee;padding:6px;border-radius:8px}
+    .hidden{display:none}
+    /* dark */
+    .dark { --bg:#0b1020; --card:#0f1724; --primary:#334155; --accent:#159957; color:#e6eef8 }
+    .dark .card,.dark .candidate,.dark .modal{background:linear-gradient(180deg,#0b1220,#0f1724);border-color:#111827;color:#dbeafe}
+    .dark header{background:linear-gradient(90deg,#000,#1f2937)}
+    .dark .status{background:#071023;border-color:#0b1220}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>NSBS Elections Voting</h2>
+  <header>
+    <h1>NSBS Elections 2025</h1>
+    <button class="dark-toggle" id="darkToggle">🌙</button>
+  </header>
 
-    <!-- Unique Voter ID -->
-    <input type="text" id="voterId" placeholder="Enter your Voter ID" />
+  <main>
+    <div class="grid">
+      <!-- Voting column -->
+      <section>
+        <div class="card" id="authCard">
+          <h2>Sign in with Email (no password)</h2>
+          <p class="help">Enter your institutional or personal email. We'll send a one-time sign-in link to that email — click it and you're in. No passwords to remember.</p>
 
-    <!-- Candidate List -->
-    <div class="candidates" id="candidates">
-      <div class="card">
-        <div>
-          <strong>Candidate A</strong><br />
-          Position: President
+          <div class="auth-row">
+            <input id="emailInput" type="email" placeholder="your.email@example.com" />
+            <button class="btn" id="sendLinkBtn">Send Link</button>
+          </div>
+          <div id="authMsg" class="small muted"></div>
         </div>
-        <button class="voteBtn" data-candidate="Candidate A">Vote</button>
-      </div>
-      <div class="card">
-        <div>
-          <strong>Candidate B</strong><br />
-          Position: President
+
+        <div class="card" id="voteCard" style="margin-top:16px;display:none">
+          <h2>Vote</h2>
+          <p class="help">Pick one candidate per position. Once you confirm a position vote, it is saved and you cannot change it.</p>
+
+          <div class="candidates" id="candidatesGrid">
+            <!-- Example candidates (replace images or names as needed) -->
+            <div class="candidate" data-position="President" data-name="John Doe">
+              <img src="https://i.pravatar.cc/150?img=6" alt="">
+              <h3>John Doe</h3>
+              <p>President</p>
+              <button class="vote-btn" onclick="startVote('President','John Doe', this)">Vote</button>
+            </div>
+
+            <div class="candidate" data-position="President" data-name="Jane Smith">
+              <img src="https://i.pravatar.cc/150?img=7" alt="">
+              <h3>Jane Smith</h3>
+              <p>President</p>
+              <button class="vote-btn" onclick="startVote('President','Jane Smith', this)">Vote</button>
+            </div>
+
+            <div class="candidate" data-position="Assistant Social Secretary" data-name="Ada Okafor">
+              <img src="https://i.pravatar.cc/150?img=12" alt="">
+              <h3>Ada Okafor</h3>
+              <p>Assistant Social Secretary</p>
+              <button class="vote-btn" onclick="startVote('Assistant Social Secretary','Ada Okafor', this)">Vote</button>
+            </div>
+
+            <div class="candidate" data-position="Assistant Social Secretary" data-name="Mike Brown">
+              <img src="https://i.pravatar.cc/150?img=8" alt="">
+              <h3>Mike Brown</h3>
+              <p>Assistant Social Secretary</p>
+              <button class="vote-btn" onclick="startVote('Assistant Social Secretary','Mike Brown', this)">Vote</button>
+            </div>
+          </div>
         </div>
-        <button class="voteBtn" data-candidate="Candidate B">Vote</button>
-      </div>
-      <div class="card">
-        <div>
-          <strong>Candidate C</strong><br />
-          Position: Assistant Social Sec
+
+        <div class="card" id="voterStatus" style="margin-top:16px;display:none">
+          <h2>Your Votes</h2>
+          <div id="yourVotes" class="muted">No votes yet.</div>
         </div>
-        <button class="voteBtn" data-candidate="Candidate C">Vote</button>
+      </section>
+
+      <!-- Right panel (status/admin quick view) -->
+      <aside class="panel">
+        <div class="card status">
+          <div class="result-row"><div><strong>Signed in as:</strong></div><div id="signedInAs" class="muted">Not signed in</div></div>
+          <div class="result-row"><div><strong>Status:</strong></div><div id="signedInStatus" class="muted">Guest</div></div>
+          <div style="margin-top:8px">
+            <button class="btn secondary" id="signOutBtn" style="width:100%;display:none">Sign out</button>
+          </div>
+        </div>
+
+        <div class="card" id="adminPanel" style="display:none">
+          <h2>Admin Controls</h2>
+          <div class="muted small">Quick results snapshot</div>
+          <div id="quickResults" style="margin-top:8px"></div>
+          <div style="margin-top:12px">
+            <button class="btn" id="downloadCSV">Download CSV</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="small">Notes</h2>
+          <div class="muted small">You will be asked to click the email link we send to complete sign-in. Make sure the link opens this same page (or your host domain).</div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Confirm modal -->
+  <div class="modal-wrap" id="confirmModal">
+    <div class="modal">
+      <button class="close-x" onclick="closeConfirm()">✕</button>
+      <h3 id="confirmTitle">Confirm Vote</h3>
+      <div id="confirmBody" class="muted" style="margin:10px 0"></div>
+      <div style="text-align:right;margin-top:12px">
+        <button class="btn secondary" onclick="closeConfirm()">Cancel</button>
+        <button class="btn" id="confirmSubmitBtn">Confirm</button>
       </div>
     </div>
   </div>
 
-  <script type="module">
-    // Import Firebase SDK
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+  <footer>
+    <div class="small muted">NSBS Elections • Built with love & mild frustration</div>
+  </footer>
 
-    // Firebase Config
+  <!-- Firebase modular SDK (v12.x) -->
+  <script type="module">
+    // ---------- CONFIGURATION ----------
+    // Replace with your Firebase project's config
     const firebaseConfig = {
       apiKey: "AIzaSyDHSdIhYHR8okBS6iqgYVhcYcRMna5BCLQ",
       authDomain: "nsbselections.firebaseapp.com",
@@ -112,39 +173,294 @@
       measurementId: "G-1FX91W66VE"
     };
 
-    // Init Firebase
+    // ADMIN EMAIL (optional) - put your admin email here so you can see admin controls
+    const ADMIN_EMAIL = "sanuthquareeb@gmail.com"; // change to your admin email
+
+    // ---------- IMPORTS ----------
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import {
+      getAuth,
+      isSignInWithEmailLink,
+      sendSignInLinkToEmail,
+      signInWithEmailLink,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      collection,
+      query,
+      where,
+      getDocs,
+      updateDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+    // ---------- INIT ----------
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Voting Logic
-    document.querySelectorAll(".voteBtn").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const voterId = document.getElementById("voterId").value.trim();
-        if (!voterId) {
-          alert("Enter your Voter ID first!");
+    // ---------- UI refs ----------
+    const emailInput = document.getElementById('emailInput');
+    const sendLinkBtn = document.getElementById('sendLinkBtn');
+    const authMsg = document.getElementById('authMsg');
+    const voteCard = document.getElementById('voteCard');
+    const authCard = document.getElementById('authCard');
+    const signedInAs = document.getElementById('signedInAs');
+    const signedInStatus = document.getElementById('signedInStatus');
+    const signOutBtn = document.getElementById('signOutBtn');
+    const yourVotesDiv = document.getElementById('yourVotes');
+    const adminPanel = document.getElementById('adminPanel');
+    const quickResults = document.getElementById('quickResults');
+    const downloadCSVBtn = document.getElementById('downloadCSV');
+
+    // ---------- ACTION URL SETTINGS ----------
+    // Make sure this URL is allowed in your Firebase console OAuth redirect domains.
+    // Use your production URL when deployed (e.g., https://yourdomain.com)
+    const actionCodeSettings = {
+      // This page should handle the sign-in link — it is the same page here.
+      url: window.location.href.split('#')[0],
+      handleCodeInApp: true
+    };
+
+    // ---------- DARK MODE ----------
+    document.getElementById('darkToggle').addEventListener('click', () => {
+      document.documentElement.classList.toggle('dark');
+    });
+
+    // ---------- SEND EMAIL LINK ----------
+    sendLinkBtn.addEventListener('click', async () => {
+      const email = (emailInput.value || '').trim();
+      if (!email) { authMsg.textContent = 'Enter a valid email.'; return; }
+      authMsg.textContent = 'Sending sign-in link…';
+
+      try {
+        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+        // Save email to localStorage to sign in later (recommended pattern)
+        localStorage.setItem('emailForSignIn', email);
+        authMsg.textContent = `Link sent! Check ${email} and click the link to sign in.`;
+      } catch (err) {
+        console.error(err);
+        authMsg.textContent = 'Error sending link: ' + err.message;
+      }
+    });
+
+    // ---------- HANDLE EMAIL LINK ON PAGE LOAD ----------
+    window.addEventListener('load', async () => {
+      // If the URL contains an email sign-in link, complete sign-in
+      if (isSignInWithEmailLink(auth, window.location.href)) {
+        let email = localStorage.getItem('emailForSignIn');
+        if (!email) {
+          // Ask user to supply their email if not in storage
+          email = window.prompt('Please provide the email you used to sign in:');
+        }
+        try {
+          const result = await signInWithEmailLink(auth, email, window.location.href);
+          localStorage.removeItem('emailForSignIn');
+          authMsg.textContent = 'Signed in successfully!';
+          // remove url params (clean URL)
+          window.history.replaceState({}, document.title, actionCodeSettings.url);
+        } catch (err) {
+          console.error('Sign-in error', err);
+          authMsg.textContent = 'Sign-in error: ' + err.message;
+        }
+      }
+    });
+
+    // ---------- AUTH STATE ----------
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Signed in
+        signedInAs.textContent = user.email || 'Signed-in user';
+        signedInStatus.textContent = 'Signed in';
+        signOutBtn.style.display = 'inline-block';
+        authCard.style.display = 'none';
+        voteCard.style.display = 'block';
+        document.getElementById('voterStatus').style.display = 'block';
+        // Load existing votes for this uid
+        await loadUserVotes(user.uid);
+        // show admin if email matches
+        if (user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+          adminPanel.style.display = 'block';
+          await loadQuickResults();
+        } else {
+          adminPanel.style.display = 'none';
+        }
+      } else {
+        // Signed out
+        signedInAs.textContent = 'Not signed in';
+        signedInStatus.textContent = 'Guest';
+        signOutBtn.style.display = 'none';
+        authCard.style.display = 'block';
+        voteCard.style.display = 'none';
+        document.getElementById('voterStatus').style.display = 'none';
+      }
+    });
+
+    signOutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      authMsg.textContent = 'Signed out.';
+    });
+
+    // ---------- VOTING LOGIC ----------
+    // current candidate info between confirm and submit
+    let pendingVote = null;
+
+    // Called by onClick on candidate buttons
+    window.startVote = function(position, candidate, btnEl) {
+      // pendingVote holds position & candidate
+      pendingVote = { position, candidate };
+      // show confirm modal
+      document.getElementById('confirmTitle').textContent = `Confirm: ${candidate} — ${position}`;
+      document.getElementById('confirmBody').textContent = `You are about to vote for ${candidate} as ${position}. This action is final for that position.`;
+      document.getElementById('confirmModal').style.display = 'flex';
+    };
+
+    window.closeConfirm = function() {
+      pendingVote = null;
+      document.getElementById('confirmModal').style.display = 'none';
+    };
+
+    // confirm submit
+    document.getElementById('confirmSubmitBtn').addEventListener('click', async () => {
+      const user = auth.currentUser;
+      if (!user) { alert('You must sign in first.'); closeConfirm(); return; }
+      if (!pendingVote) { closeConfirm(); return; }
+
+      const uid = user.uid;
+      const pos = pendingVote.position;
+      const cand = pendingVote.candidate;
+
+      try {
+        // vote doc path: votes/{uid} contains fields per position so user can have one doc
+        // field names: positions.x => candidate name and timestamp
+        const userVoteDocRef = doc(db, 'votes', uid);
+        const existing = await getDoc(userVoteDocRef);
+        if (existing.exists() && existing.data()[pos]) {
+          alert(`You already voted for ${pos} as ${existing.data()[pos].name}. You cannot change it.`);
+          closeConfirm();
           return;
         }
 
-        const candidate = btn.dataset.candidate;
-        const voteRef = doc(db, "votes", voterId);
+        // set nested structure per position
+        await setDoc(userVoteDocRef, {
+          [pos]: { name: cand, timestamp: serverTimestamp() },
+          email: user.email || null
+        }, { merge: true });
 
-        try {
-          const voteSnap = await getDoc(voteRef);
-          if (voteSnap.exists()) {
-            alert("You have already voted!");
-            return;
-          }
-
-          await setDoc(voteRef, {
-            candidate: candidate,
-            timestamp: new Date()
-          });
-          alert(`Your vote for ${candidate} has been recorded!`);
-        } catch (error) {
-          alert("Error: " + error.message);
+        alert(`Vote recorded: ${cand} — ${pos}`);
+        await loadUserVotes(uid);
+        closeConfirm();
+        if (user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+          // refresh admin snapshot
+          await loadQuickResults();
         }
-      });
+      } catch (err) {
+        console.error('Vote error', err);
+        alert('Error recording vote: ' + err.message);
+        closeConfirm();
+      }
     });
-  </script>
-</body>
-</html>
+
+    // Load and render this user's votes
+    async function loadUserVotes(uid) {
+      try {
+        const docRef = doc(db, 'votes', uid);
+        const snap = await getDoc(docRef);
+        if (!snap.exists()) {
+          yourVotesDiv.innerHTML = '<div class="muted">No votes yet.</div>';
+          return;
+        }
+        const data = snap.data();
+        const entries = Object.entries(data).filter(([k]) => k !== 'email');
+        if (entries.length === 0) {
+          yourVotesDiv.innerHTML = '<div class="muted">No votes yet.</div>';
+          return;
+        }
+        let html = '<ul style="list-style:none;padding-left:0">';
+        for (const [pos, obj] of entries) {
+          html += `<li><strong>${pos}</strong>: ${obj.name} <span class="muted" style="display:block;font-size:0.88rem">${obj.timestamp ? '' : ''}</span></li>`;
+        }
+        html += '</ul>';
+        yourVotesDiv.innerHTML = html;
+      } catch (err) {
+        console.error('loadUserVotes', err);
+        yourVotesDiv.innerHTML = '<div class="muted">Unable to load your votes.</div>';
+      }
+    }
+
+    // ---------- ADMIN QUICK RESULTS ----------
+    async function loadQuickResults() {
+      try {
+        // get all docs in votes collection
+        const votesSnapshot = await getDocs(collection(db, 'votes'));
+        const tallies = {}; // tallies[position][candidate] = count
+        votesSnapshot.forEach(docSnap => {
+          const data = docSnap.data();
+          for (const key of Object.keys(data)) {
+            if (key === 'email') continue;
+            const pos = key;
+            const name = data[key]?.name || data[key];
+            if (!name) continue;
+            tallies[pos] = tallies[pos] || {};
+            tallies[pos][name] = (tallies[pos][name] || 0) + 1;
+          }
+        });
+
+        // render summary
+        quickResults.innerHTML = '';
+        for (const pos of Object.keys(tallies)) {
+          const wrapper = document.createElement('div');
+          wrapper.style.marginBottom = '8px';
+          wrapper.innerHTML = `<strong>${pos}</strong>`;
+          for (const cand of Object.keys(tallies[pos])) {
+            const r = document.createElement('div');
+            r.className = 'result-row';
+            r.style.marginTop = '6px';
+            r.innerHTML = `<div class="small">${cand}</div><div>${tallies[pos][cand]}</div>`;
+            wrapper.appendChild(r);
+          }
+          quickResults.appendChild(wrapper);
+        }
+      } catch (err) {
+        console.error('loadQuickResults', err);
+        quickResults.innerHTML = '<div class="muted">Unable to load results.</div>';
+      }
+    }
+
+    // CSV download of detailed votes (admin)
+    downloadCSVBtn.addEventListener('click', async () => {
+      try {
+        const votesSnap = await getDocs(collection(db, 'votes'));
+        const rows = [['uid','email','position','candidate']];
+        votesSnap.forEach(s => {
+          const d = s.data();
+          const uid = s.id;
+          const email = d.email || '';
+          for (const k of Object.keys(d)) {
+            if (k === 'email') continue;
+            const pos = k;
+            const name = d[k]?.name || d[k];
+            rows.push([uid, email, pos, name]);
+          }
+        });
+        // join csv
+        const csv = rows.map(r => r.map(cell => `"${String(cell).replace(/"/g,'""')}"`).join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'nsbs_votes.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error('downloadCSV', err);
+        alert('Unable to download CSV: ' + err.message);
+      }
+    });
+
+ 
